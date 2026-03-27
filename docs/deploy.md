@@ -62,6 +62,16 @@ Mailpit should stay local only.
 - add request, job and moderation dashboards to whatever monitoring stack is chosen
 - document incident response for spam, abuse and admin credential rotation
 
+## Secret Leak Response
+
+If any SMTP or deploy credential is exposed in Git history:
+
+1. rotate the leaked credential immediately with the provider
+2. replace all local and deployed copies with the new value
+3. remove the leaked value from git history if it was committed
+4. confirm `.env.production` stays ignored and only `.env.production.example` is versioned
+5. re-run secret scanning after the cleanup
+
 ## Missing Pieces
 
 - CI/CD pipeline or deploy script
