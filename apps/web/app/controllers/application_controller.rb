@@ -25,6 +25,12 @@ class ApplicationController < ActionController::Base
     redirect_to sign_in_path, alert: "Entre para continuar."
   end
 
+  def require_admin!
+    return if authenticated? && current_user.admin?
+
+    redirect_to dashboard_path, alert: "Area restrita a administradores."
+  end
+
   def resume_session
     Current.user = User.find_by(id: session[:user_id]) if session[:user_id].present?
   end

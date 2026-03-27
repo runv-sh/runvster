@@ -12,6 +12,8 @@ services:
     environment:
       RAILS_ENV: development
       BUNDLE_PATH: /usr/local/bundle
+      APP_HOST: localhost
+      APP_PORT: ${APP_PORT:-3000}
       DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@db:5432/${POSTGRES_DB:-runvster_development}
       REDIS_URL: redis://redis:6379/1
       SMTP_ADDRESS: mailpit
@@ -49,6 +51,8 @@ services:
     environment:
       RAILS_ENV: development
       BUNDLE_PATH: /usr/local/bundle
+      APP_HOST: localhost
+      APP_PORT: ${APP_PORT:-3000}
       DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@db:5432/${POSTGRES_DB:-runvster_development}
       REDIS_URL: redis://redis:6379/1
       SMTP_ADDRESS: mailpit

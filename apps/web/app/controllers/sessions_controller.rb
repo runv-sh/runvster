@@ -8,7 +8,7 @@ class SessionsController < ApplicationController
 
     if user&.authenticate(session_params[:password])
       start_session_for(user)
-      redirect_to root_path, notice: "Bem-vinde de volta."
+      redirect_to dashboard_path, notice: "Bem-vinde de volta."
     else
       flash.now[:alert] = "Email ou senha invalidos."
       render :new, status: :unprocessable_entity

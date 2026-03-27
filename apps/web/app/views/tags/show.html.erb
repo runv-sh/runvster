@@ -1,0 +1,44 @@
+<% content_for :title, "##{@tag.slug} | Runvster" %>
+
+<main class="rv-shell">
+  <%= render "shared/topbar" %>
+
+  <section class="rv-layout">
+    <div class="rv-column rv-column--main">
+      <article class="rv-panel">
+        <p class="rv-section-eyebrow">Tag</p>
+        <h1 class="rv-section-title rv-section-title--page">#<%= @tag.slug %></h1>
+        <p class="rv-lead rv-lead--compact">
+          <%= @tag.description.presence || "Ainda sem descricao editorial para esta tag." %>
+        </p>
+      </article>
+
+      <% if @posts.any? %>
+        <section class="rv-feed-stream rv-feed-stream--flat">
+          <ol class="rv-feed-list">
+            <% @posts.each_with_index do |post, index| %>
+              <%= render "posts/post_card", post: post, index: index %>
+            <% end %>
+          </ol>
+        </section>
+      <% else %>
+        <article class="rv-empty">
+          <h3>Nenhum post associado ainda.</h3>
+          <p>Essa tag existe, mas ainda nao recebeu publicacoes.</p>
+        </article>
+      <% end %>
+    </div>
+
+    <aside class="rv-column rv-column--side">
+      <article class="rv-panel">
+        <p class="rv-section-eyebrow">Descoberta</p>
+        <h2 class="rv-card-title">Tags relacionadas</h2>
+        <div class="rv-pill-row">
+          <% @related_tags.each do |tag| %>
+            <%= link_to "##{tag.slug}", tag_path(tag), class: "rv-pill" %>
+          <% end %>
+        </div>
+      </article>
+    </aside>
+  </section>
+</main>

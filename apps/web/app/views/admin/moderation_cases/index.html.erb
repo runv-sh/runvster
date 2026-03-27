@@ -1,0 +1,38 @@
+<% content_for :title, "Moderacao | Runvster" %>
+
+<main class="rv-shell">
+  <%= render "shared/topbar" %>
+
+  <section class="rv-stack">
+    <article class="rv-panel">
+      <p class="rv-section-eyebrow">Admin</p>
+      <h1 class="rv-section-title rv-section-title--page">Fila de moderacao</h1>
+
+      <% if @moderation_cases.any? %>
+        <div class="rv-admin-table">
+          <% @moderation_cases.each do |moderation_case| %>
+            <div class="rv-admin-table__row rv-admin-table__row--stacked">
+              <div>
+                <strong><%= moderation_case.reason %></strong>
+                <p class="rv-meta">
+                  Reportado por @<%= moderation_case.reporter.username %> · alvo: <%= moderation_case.reportable_type %> #<%= moderation_case.reportable_id %> · status atual: <%= moderation_case.status %>
+                </p>
+                <% if moderation_case.details.present? %>
+                  <p class="rv-meta"><%= moderation_case.details %></p>
+                <% end %>
+              </div>
+
+              <%= form_with model: [ :admin, moderation_case ], class: "rv-inline-form" do |form| %>
+                <%= form.select :status, ModerationCase.statuses.keys.map { |status| [ status.humanize, status ] }, {}, class: "rv-input" %>
+                <%= form.text_field :resolution_note, placeholder: "Nota de resolucao", class: "rv-input" %>
+                <%= form.submit "Aplicar decisao", class: "rv-button rv-button--primary rv-button--tiny" %>
+              <% end %>
+            </div>
+          <% end %>
+        </div>
+      <% else %>
+        <p class="rv-meta">Nenhum caso de moderacao aberto.</p>
+      <% end %>
+    </article>
+  </section>
+</main>

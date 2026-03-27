@@ -1,0 +1,10 @@
+<%= form_with url: moderation_cases_path, scope: :moderation_case, class: "rv-inline-form" do |form| %>
+  <%= form.hidden_field :reportable_type, value: reportable.class.name %>
+  <%= form.hidden_field :reportable_id, value: reportable.id %>
+
+  <div class="rv-inline-form__row">
+    <%= form.text_field :reason, placeholder: "Motivo do reporte", class: "rv-input" %>
+    <%= form.text_field :details, placeholder: "Contexto opcional para a moderacao", class: "rv-input" %>
+    <%= form.submit "Reportar #{moderation_subject_label(reportable)}", class: "rv-button rv-button--ghost rv-button--tiny" %>
+  </div>
+<% end %>

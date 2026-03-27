@@ -6,14 +6,24 @@
   <section class="rv-auth">
     <article class="rv-panel">
       <p class="rv-eyebrow">Onboarding</p>
-      <h1 class="rv-section-title rv-section-title--page">Abra a primeira camada da comunidade.</h1>
+      <h1 class="rv-section-title rv-section-title--page">
+        <%= User.count.zero? ? "Abra a primeira camada da comunidade." : "Ative seu convite e entre na comunidade." %>
+      </h1>
       <p class="rv-lead rv-lead--compact">
-        Esse fluxo ja cria conta, inicia sessao e te leva direto para publicar no alpha.
+        <% if User.count.zero? %>
+          Esse fluxo cria o primeiro usuario administrador e abre a operacao inicial da plataforma.
+        <% else %>
+          Esse fluxo valida seu convite, cria a conta, inicia a sessao e te leva direto para sua dashboard.
+        <% end %>
       </p>
+
+      <% if @invitation.present? %>
+        <p class="rv-meta">Convite para <strong><%= @invitation.recipient_email %></strong> valido ate <%= l(@invitation.expires_at, format: :long) %>.</p>
+      <% end %>
 
       <%= render "shared/form_errors", record: @user %>
 
-      <%= form_with model: @user, url: users_path, class: "rv-form" do |form| %>
+      <%= form_with model: @user, url: users_path(invite: @invitation&.token), class: "rv-form" do |form| %>
         <div class="rv-field">
           <%= form.label :username, "Username" %>
           <%= form.text_field :username, autofocus: true, placeholder: "runvster" %>
@@ -21,7 +31,7 @@
 
         <div class="rv-field">
           <%= form.label :email, "Email" %>
-          <%= form.email_field :email, placeholder: "voce@runv.club" %>
+          <%= form.email_field :email, placeholder: "voce@runv.club", value: @invitation&.recipient_email, readonly: @invitation.present? %>
         </div>
 
         <div class="rv-field">

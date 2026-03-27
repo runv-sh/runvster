@@ -1,0 +1,45 @@
+<% content_for :title, "Admin Tags | Runvster" %>
+
+<main class="rv-shell">
+  <%= render "shared/topbar" %>
+
+  <section class="rv-stack">
+    <article class="rv-panel">
+      <p class="rv-section-eyebrow">Admin</p>
+      <h1 class="rv-section-title rv-section-title--page">Curadoria de tags</h1>
+
+      <div class="rv-admin-table">
+        <% @tags.each do |tag| %>
+          <div class="rv-admin-table__row rv-admin-table__row--stacked">
+            <div>
+              <strong><%= link_to "##{tag.slug}", tag_path(tag), class: "rv-inline-link" %></strong>
+              <p class="rv-meta"><%= pluralize(tag.posts_count, "post") %> associados</p>
+            </div>
+
+            <%= form_with model: [ :admin, tag ], class: "rv-form" do |form| %>
+              <div class="rv-field">
+                <%= form.label :name, "Nome" %>
+                <%= form.text_field :name %>
+              </div>
+              <div class="rv-field">
+                <%= form.label :slug, "Slug" %>
+                <%= form.text_field :slug %>
+              </div>
+              <div class="rv-field">
+                <%= form.label :description, "Descricao editorial" %>
+                <%= form.text_area :description, rows: 3, placeholder: "Explique o recorte e o uso ideal desta tag." %>
+              </div>
+              <div class="rv-actions">
+                <%= form.submit "Salvar tag", class: "rv-button rv-button--primary rv-button--tiny" %>
+              </div>
+            <% end %>
+
+            <div class="rv-actions">
+              <%= button_to "Excluir tag", admin_tag_path(tag), method: :delete, class: "rv-button rv-button--ghost rv-button--tiny", form: { data: { turbo_confirm: "Excluir esta tag?" } } %>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    </article>
+  </section>
+</main>

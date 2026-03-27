@@ -2,7 +2,7 @@
 
 ![Runvster](img/runvster.png)
 
-Runvster is a small community platform for links and discussion.
+Runvster is a small invitation-only community platform for links and discussion.
 
 ## Stack
 
@@ -29,6 +29,10 @@ Mail:
 Login:
 
 - [http://localhost:3000/login](http://localhost:3000/login)
+
+Dashboard:
+
+- [http://localhost:3000/dashboard](http://localhost:3000/dashboard)
 
 ## Docs
 

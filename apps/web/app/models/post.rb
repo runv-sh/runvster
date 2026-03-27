@@ -3,8 +3,11 @@ class Post < ApplicationRecord
 
   belongs_to :user, counter_cache: true
 
+  has_many :comments, -> { includes(:user, replies: :user).chronological }, dependent: :destroy
+  has_many :votes, dependent: :destroy
   has_many :taggings, dependent: :destroy
   has_many :tags, -> { order(name: :asc) }, through: :taggings
+  has_many :moderation_cases, as: :reportable, dependent: :destroy
 
   before_validation :normalize_fields
 
@@ -22,10 +25,12 @@ class Post < ApplicationRecord
   scope :links_first, -> { link_posts.recent_first }
   scope :discussion_first, -> { discussion_posts.recent_first }
   scope :top_first, lambda {
-    left_joins(:taggings)
-      .with_feed_associations
-      .group("posts.id")
-      .order(Arel.sql("COUNT(taggings.id) DESC, posts.created_at DESC"))
+    with_feed_associations
+      .order(
+        Arel.sql(
+          "((posts.score * 8) + (posts.comments_count * 3) + GREATEST(0, 72 - (EXTRACT(EPOCH FROM (NOW() - posts.created_at)) / 3600.0))) DESC, posts.created_at DESC"
+        )
+      )
   }
 
   def tag_list
@@ -46,6 +51,12 @@ class Post < ApplicationRecord
 
   def link_post?
     url.present?
+  end
+
+  def score_for(user)
+    return 0 if user.blank?
+
+    votes.find_by(user: user)&.value.to_i
   end
 
   def display_host

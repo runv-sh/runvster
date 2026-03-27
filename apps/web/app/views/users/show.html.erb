@@ -9,6 +9,9 @@
         <p class="rv-section-eyebrow">Profile</p>
         <h1 class="rv-section-title rv-section-title--page">@<%= @user.username %></h1>
         <p class="rv-lead rv-lead--compact"><%= @user.bio.presence || "Pessoa builder ainda sem bio publicada." %></p>
+        <% if authenticated? && current_user != @user %>
+          <%= render "shared/moderation_form", reportable: @user %>
+        <% end %>
       </article>
 
       <div class="rv-section-head">

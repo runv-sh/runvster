@@ -8,7 +8,7 @@
       <article class="rv-panel rv-post-detail">
         <div class="rv-pill-row rv-pill-row--spaced">
           <% @post.tags.each do |tag| %>
-            <span class="rv-pill"><%= tag.name %></span>
+            <%= link_to tag.name, tag_path(tag), class: "rv-pill" %>
           <% end %>
         </div>
 
@@ -26,10 +26,53 @@
           </div>
         <% end %>
 
+        <div class="rv-post-detail__engagement">
+          <%= render "shared/vote_controls", post: @post %>
+          <p class="rv-meta"><strong><%= @post.score %></strong> pontos · <strong><%= @post.comments_count %></strong> comentarios</p>
+        </div>
+
         <% if @post.link_post? %>
           <div class="rv-post-detail__actions">
             <%= link_to "Abrir link original", @post.url, class: "rv-button rv-button--primary", target: "_blank", rel: "noreferrer" %>
           </div>
+        <% end %>
+
+        <% if authenticated? %>
+          <div class="rv-post-detail__actions">
+            <%= render "shared/moderation_form", reportable: @post %>
+          </div>
+        <% end %>
+      </article>
+
+      <article class="rv-panel">
+        <p class="rv-section-eyebrow">Discussao</p>
+        <h2 class="rv-card-title">Comentarios</h2>
+
+        <% if authenticated? %>
+          <%= form_with model: [ @post, @comment ], class: "rv-form" do |form| %>
+            <div class="rv-field">
+              <%= form.label :body, "Participe da conversa" %>
+              <%= form.text_area :body, rows: 5, placeholder: "Adicione um comentario que mova a conversa para frente." %>
+            </div>
+            <div class="rv-actions">
+              <%= form.submit "Publicar comentario", class: "rv-button rv-button--primary" %>
+            </div>
+          <% end %>
+        <% else %>
+          <p class="rv-meta">Entre na sua conta para comentar e votar.</p>
+        <% end %>
+
+        <% if @root_comments.any? %>
+          <div class="rv-comments">
+            <% @root_comments.each do |comment| %>
+              <%= render "comments/comment", comment: comment, post: @post %>
+            <% end %>
+          </div>
+        <% else %>
+          <article class="rv-empty">
+            <h3>A discussao ainda nao comecou.</h3>
+            <p>Esse post esta pronto para receber a primeira resposta.</p>
+          </article>
         <% end %>
       </article>
     </div>
@@ -44,8 +87,7 @@
       <article class="rv-panel">
         <p class="rv-section-eyebrow">Mais do sistema</p>
         <p class="rv-meta">
-          Comentarios e votos entram no proximo slice. Por enquanto, esse detalhe ja fecha o fluxo base de feed e
-          publicacao.
+          O feed agora usa score, comentarios e recencia para ranqueamento. Tags tambem ganharam paginas dedicadas.
         </p>
       </article>
     </aside>

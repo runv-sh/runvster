@@ -9,6 +9,7 @@ class Tag < ApplicationRecord
   validates :description, length: { maximum: 160 }
 
   scope :featured, -> { order(posts_count: :desc, name: :asc) }
+  scope :alphabetical, -> { order(name: :asc) }
 
   def to_param
     slug

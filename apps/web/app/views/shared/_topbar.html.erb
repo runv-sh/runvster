@@ -8,8 +8,11 @@
 
   <nav class="rv-nav" aria-label="Primary">
     <%= link_to "Feed", root_path, class: "rv-nav__link" %>
+    <%= link_to "Tags", tag_path(Tag.featured.first || "founders"), class: "rv-nav__link" if Tag.exists? %>
 
     <% if authenticated? %>
+      <%= link_to current_user.admin? ? "Admin" : "Dashboard", dashboard_path, class: "rv-nav__link" %>
+      <%= link_to "Inbox#{current_user.unread_notifications_count.positive? ? " (#{current_user.unread_notifications_count})" : ""}", notifications_path, class: "rv-nav__link" %>
       <%= link_to "Publicar", new_post_path, class: "rv-nav__link rv-nav__link--accent" %>
       <%= link_to "@#{current_user.username}", user_path(current_user), class: "rv-nav__link" %>
       <%= button_to "Sair", sign_out_path, method: :delete, class: "rv-button rv-button--ghost rv-button--tiny" %>

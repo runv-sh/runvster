@@ -50,6 +50,12 @@ Feed helpers already exist:
 - `links_first`
 - `discussion_first`
 
+Engagement fields:
+
+- `score`
+- `votes_count`
+- `comments_count`
+
 ## Tag
 
 Main fields:
@@ -78,6 +84,86 @@ Rules:
 
 - one tag cannot be attached to the same post twice
 - `posts_count` on tags is updated by counter cache
+
+## Invitation
+
+Main fields:
+
+- `inviter_id`
+- `invitee_id`
+- `recipient_email`
+- `token`
+- `accepted_at`
+- `expires_at`
+- `revoked_at`
+
+Rules:
+
+- first user becomes admin automatically
+- after one month of account age, members unlock 5 total invites
+- admins can invite without limit
+- invites expire if they are not used in time
+
+## Comment
+
+Main fields:
+
+- `post_id`
+- `user_id`
+- `parent_id`
+- `body`
+
+Rules:
+
+- comments belong to posts
+- comments can reply to other comments
+- `comments_count` on posts is updated by counter cache
+
+## Vote
+
+Main fields:
+
+- `post_id`
+- `user_id`
+- `value`
+
+Rules:
+
+- one vote per user per post
+- vote can be `1` or `-1`
+- post score is recalculated from vote values
+
+## Notification
+
+Notifications track:
+
+- accepted invites
+- comments on posts
+- replies to comments
+- moderation events
+
+## ModerationCase
+
+Moderation reports can target:
+
+- posts
+- comments
+- user profiles
+
+Statuses:
+
+- `open`
+- `reviewing`
+- `resolved`
+- `dismissed`
+
+## AdminAction
+
+Audit trail for admin operations such as:
+
+- role changes
+- moderation decisions
+- tag curation
 
 ## Session
 

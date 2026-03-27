@@ -18,20 +18,23 @@ This folder documents the system as it exists today.
 Implemented today:
 
 - Docker-first local stack
-- account creation
+- invitation-only account creation
 - login via `/login`
 - server-side sessions
 - user profiles
 - link posts
 - text posts
 - tags
+- tag pages
+- comments
+- votes on posts
+- notifications inbox
+- moderation reports
+- admin role management and moderation queue
 - feed filters: `Recentes`, `Top`, `Links`, `Discussao`
 
 Still missing:
 
-- threaded comments
-- votes
-- ranking based on votes/activity
-- moderation tools
-- admin panel
-- production deploy artifacts
+- deeper moderation actions like suspensions and takedowns
+- richer notification preferences or digests
+- production reverse proxy config and CI/CD

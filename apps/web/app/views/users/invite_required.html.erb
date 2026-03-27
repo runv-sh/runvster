@@ -1,0 +1,23 @@
+<% content_for :title, "Convite Necessario | Runvster" %>
+
+<main class="rv-shell rv-shell--narrow">
+  <%= render "shared/topbar" %>
+
+  <section class="rv-auth">
+    <article class="rv-panel rv-panel--attention">
+      <p class="rv-eyebrow">Acesso Fechado</p>
+      <h1 class="rv-section-title rv-section-title--page">Este convite nao pode mais ser usado.</h1>
+      <p class="rv-lead rv-lead--compact">
+        O Runvster opera por convite. O link pode estar invalido, expirado, revogado ou ja ter sido consumido.
+      </p>
+
+      <div class="rv-stack">
+        <p class="rv-meta">Se voce recebeu esse link recentemente, peca ao emissor para reenviar um convite novo.</p>
+        <div class="rv-actions">
+          <%= link_to "Ir para login", sign_in_path, class: "rv-button rv-button--primary" %>
+          <%= link_to "Voltar ao feed", root_path, class: "rv-button rv-button--secondary" %>
+        </div>
+      </div>
+    </article>
+  </section>
+</main>

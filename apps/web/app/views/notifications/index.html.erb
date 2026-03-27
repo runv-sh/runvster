@@ -1,0 +1,28 @@
+<% content_for :title, "Notificacoes | Runvster" %>
+
+<main class="rv-shell rv-shell--narrow">
+  <%= render "shared/topbar" %>
+
+  <section class="rv-stack">
+    <article class="rv-panel">
+      <p class="rv-section-eyebrow">Inbox</p>
+      <h1 class="rv-section-title rv-section-title--page">Notificacoes</h1>
+
+      <% if @notifications.any? %>
+        <ul class="rv-dashboard-list">
+          <% @notifications.each do |notification| %>
+            <li class="<%= "rv-notification--unread" if notification.read_at.blank? %>">
+              <strong><%= notification.message %></strong>
+              <span><%= time_ago_in_words(notification.created_at) %> atras</span>
+              <% if notification.read_at.blank? %>
+                <%= button_to "Marcar como lida", notification_path(notification), method: :patch, class: "rv-button rv-button--ghost rv-button--tiny" %>
+              <% end %>
+            </li>
+          <% end %>
+        </ul>
+      <% else %>
+        <p class="rv-meta">Ainda nao ha notificacoes para esta conta.</p>
+      <% end %>
+    </article>
+  </section>
+</main>

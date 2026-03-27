@@ -1,0 +1,37 @@
+<article class="rv-comment" id="comment-<%= comment.id %>">
+  <div class="rv-comment__meta">
+    <strong><%= link_to "@#{comment.user.username}", user_path(comment.user), class: "rv-inline-link" %></strong>
+    <span>·</span>
+    <span><%= time_ago_in_words(comment.created_at) %> atras</span>
+    <% if comment.replies_count.positive? %>
+      <span>·</span>
+      <span><%= pluralize(comment.replies_count, "resposta") %></span>
+    <% end %>
+  </div>
+
+  <div class="rv-prose rv-prose--comment">
+    <%= simple_format(comment.body) %>
+  </div>
+
+  <% if authenticated? %>
+    <%= form_with model: [ post, Comment.new ], class: "rv-form rv-form--reply" do |form| %>
+      <%= form.hidden_field :parent_id, value: comment.id %>
+      <div class="rv-field">
+        <%= form.text_area :body, rows: 3, placeholder: "Responder a esse comentario" %>
+      </div>
+      <div class="rv-actions">
+        <%= form.submit "Responder", class: "rv-button rv-button--secondary rv-button--tiny" %>
+      </div>
+    <% end %>
+
+    <%= render "shared/moderation_form", reportable: comment %>
+  <% end %>
+
+  <% if comment.replies.any? %>
+    <div class="rv-comment__replies">
+      <% comment.replies.each do |reply| %>
+        <%= render "comments/comment", comment: reply, post: post %>
+      <% end %>
+    </div>
+  <% end %>
+</article>

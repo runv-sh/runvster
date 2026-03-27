@@ -10,6 +10,8 @@ class PostsController < ApplicationController
   end
 
   def show
+    @comment = Comment.new
+    @root_comments = @post.comments.root_level.chronological
     @featured_tags = Tag.featured.limit(8)
   end
 
@@ -48,6 +50,6 @@ class PostsController < ApplicationController
   end
 
   def set_post
-    @post = Post.includes(:user, :tags).find(params[:id])
+    @post = Post.includes(:user, :tags, comments: [ :user, { replies: :user } ]).find(params[:id])
   end
 end

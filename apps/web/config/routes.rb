@@ -22,7 +22,24 @@ Rails.application.routes.draw do
   get "sign-in", to: redirect("/login")
   delete "sign-out", to: "sessions#destroy", as: :sign_out
 
+  resource :dashboard, only: :show
+  resources :notifications, only: %i[index update]
   resource :session, only: %i[create]
+  resources :invitations, only: %i[create]
+  resources :moderation_cases, only: %i[create]
+  resources :tags, only: :show
   resources :users, path: "u", param: :username, only: %i[new create show]
-  resources :posts, only: %i[index show new create]
+  resources :posts, only: %i[index show new create] do
+    resource :vote, only: %i[create update destroy]
+    resources :comments, only: :create
+  end
+
+  namespace :admin do
+    resources :users, only: %i[index update destroy]
+    resources :posts, only: %i[index update destroy]
+    resources :comments, only: %i[index update destroy]
+    resources :invitations, only: %i[index update destroy]
+    resources :moderation_cases, only: %i[index update]
+    resources :tags, only: %i[index update destroy]
+  end
 end

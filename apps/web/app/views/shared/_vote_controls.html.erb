@@ -1,0 +1,20 @@
+<div class="rv-vote-controls">
+  <% if authenticated? %>
+    <% current_vote = post.score_for(current_user) %>
+    <% if current_vote == 1 %>
+      <%= button_to "▲", post_vote_path(post), method: :delete, class: "rv-vote-button rv-vote-button--up rv-vote-button--active" %>
+    <% else %>
+      <%= button_to "▲", post_vote_path(post), method: (current_vote.zero? ? :post : :patch), params: { value: 1 }, class: "rv-vote-button rv-vote-button--up" %>
+    <% end %>
+
+    <strong class="rv-vote-score"><%= post.score %></strong>
+
+    <% if current_vote == -1 %>
+      <%= button_to "▼", post_vote_path(post), method: :delete, class: "rv-vote-button rv-vote-button--down rv-vote-button--active" %>
+    <% else %>
+      <%= button_to "▼", post_vote_path(post), method: (current_vote.zero? ? :post : :patch), params: { value: -1 }, class: "rv-vote-button rv-vote-button--down" %>
+    <% end %>
+  <% else %>
+    <strong class="rv-vote-score"><%= post.score %></strong>
+  <% end %>
+</div>

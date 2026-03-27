@@ -8,9 +8,13 @@ Primary target domain:
 
 ## Current State
 
-Production deployment is not finished yet.
+The app now has a first-pass production artifact set:
 
-The project runs locally in Docker, but it still needs production-specific files and environment wiring.
+- [compose.production.yaml](../compose.production.yaml)
+- [.env.production.example](../.env.production.example)
+- [docker/nginx/default.conf](../docker/nginx/default.conf)
+
+It still needs environment-specific secrets, reverse proxy hardening, backup automation and monitoring credentials before real launch.
 
 ## Expected Production Shape
 
@@ -19,6 +23,8 @@ The project runs locally in Docker, but it still needs production-specific files
 - Rails worker container
 - PostgreSQL
 - Redis
+- SMTP provider
+- error tracking and uptime monitoring
 
 Mailpit should stay local only.
 
@@ -34,20 +40,30 @@ Mailpit should stay local only.
 
 ## Production Checklist
 
-1. add production environment variables
+1. copy `.env.production.example` to `.env.production`
 2. set `APP_HOST=runvster.runv.club`
-3. define production compose or deploy stack
-4. wire reverse proxy and TLS
-5. configure Active Storage target
-6. create backups for PostgreSQL
-7. add monitoring and error tracking
-8. create first admin account
+3. generate and store `SECRET_KEY_BASE`
+4. provision managed SMTP credentials
+5. wire reverse proxy and TLS certificates
+6. configure PostgreSQL backups and restore drills
+7. add observability: logs, uptime checks, exception tracking, queue health
+8. define retention rules for invites, notifications and moderation history
+9. create the first admin account through the invite/bootstrap flow
+10. run `docker compose -f compose.production.yaml up --build -d`
 
-## Missing Artifacts
+## Hardening Notes
 
-These files do not exist yet and still need to be created:
+- keep `credentials.yml.enc` under controlled access
+- never commit `.env.production`
+- configure `config.force_ssl = true` in production before public exposure
+- set mailer host/domain from environment
+- prefer managed PostgreSQL snapshots plus offsite backup copy
+- monitor `SolidQueue` latency and failed jobs
+- add request, job and moderation dashboards to whatever monitoring stack is chosen
+- document incident response for spam, abuse and admin credential rotation
 
-- `compose.production.yaml`
-- reverse proxy config
-- production secret management strategy
-- deployment script or CI/CD pipeline
+## Missing Pieces
+
+- CI/CD pipeline or deploy script
+- Sentry or equivalent fully wired
+- backup automation scripts

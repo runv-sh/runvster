@@ -1,6 +1,7 @@
 <li class="rv-feed-item">
-  <div class="rv-feed-item__rank">
+  <div class="rv-feed-item__rank rv-feed-item__rank--engagement">
     <span><%= index + 1 %>.</span>
+    <%= render "shared/vote_controls", post: post %>
   </div>
 
   <div class="rv-feed-item__main">
@@ -19,11 +20,15 @@
       <span>por <%= link_to "@#{post.user.username}", user_path(post.user), class: "rv-inline-link" %></span>
       <span>•</span>
       <span><%= time_ago_in_words(post.created_at) %> atras</span>
+      <span>•</span>
+      <span><%= pluralize(post.comments_count, "comentario") %></span>
+      <span>•</span>
+      <span><%= pluralize(post.score, "ponto") %></span>
       <% if post.tags.any? %>
         <span>•</span>
         <span class="rv-feed-item__tags-inline">
           <% post.tags.each do |tag| %>
-            <span class="rv-feed-item__tag"><%= tag.name %></span>
+            <%= link_to tag.name, tag_path(tag), class: "rv-feed-item__tag" %>
           <% end %>
         </span>
       <% end %>

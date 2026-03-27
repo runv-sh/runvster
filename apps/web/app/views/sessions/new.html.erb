@@ -7,7 +7,9 @@
     <article class="rv-panel">
       <p class="rv-eyebrow">Login</p>
       <h1 class="rv-section-title rv-section-title--page">Acesse sua sessao.</h1>
-      <p class="rv-lead rv-lead--compact">O acesso fica disponivel diretamente pela rota `/login`.</p>
+      <p class="rv-lead rv-lead--compact">
+        O acesso fica disponivel diretamente pela rota `/login`. Novas contas entram somente por convite.
+      </p>
 
       <%= form_with scope: :session, url: session_path, class: "rv-form" do |form| %>
         <div class="rv-field">

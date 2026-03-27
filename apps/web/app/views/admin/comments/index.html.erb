@@ -1,0 +1,37 @@
+<% content_for :title, "Admin Comments | Runvster" %>
+
+<main class="rv-shell">
+  <%= render "shared/topbar" %>
+
+  <section class="rv-stack">
+    <article class="rv-panel">
+      <p class="rv-section-eyebrow">Admin</p>
+      <h1 class="rv-section-title rv-section-title--page">Gestao de comentarios</h1>
+
+      <div class="rv-admin-table">
+        <% @comments.each do |comment| %>
+          <div class="rv-admin-table__row rv-admin-table__row--stacked">
+            <div>
+              <strong>Comentario #<%= comment.id %></strong>
+              <p class="rv-meta">por @<%= comment.user.username %> no post <%= link_to comment.post.title, post_path(comment.post), class: "rv-inline-link" %></p>
+            </div>
+
+            <%= form_with model: [ :admin, comment ], class: "rv-form" do |form| %>
+              <div class="rv-field">
+                <%= form.label :body, "Texto" %>
+                <%= form.text_area :body, rows: 4 %>
+              </div>
+              <div class="rv-actions">
+                <%= form.submit "Salvar comentario", class: "rv-button rv-button--primary rv-button--tiny" %>
+              </div>
+            <% end %>
+
+            <div class="rv-actions">
+              <%= button_to "Excluir comentario", admin_comment_path(comment), method: :delete, class: "rv-button rv-button--ghost rv-button--tiny", form: { data: { turbo_confirm: "Excluir este comentario?" } } %>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    </article>
+  </section>
+</main>
