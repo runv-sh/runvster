@@ -1,0 +1,65 @@
+<% content_for :title, "Runvster" %>
+
+<main class="rv-shell">
+  <header class="rv-topbar">
+    <a class="rv-brand" href="/">
+      <%= image_tag "runvster.png", alt: "Runvster", class: "rv-brand-mark" %>
+      <span class="rv-brand-copy">
+        <span class="rv-brand-name">Runvster</span>
+        <span class="rv-brand-tagline">A sharper community platform for builders.</span>
+      </span>
+    </a>
+
+    <span class="rv-chip">Docker-first alpha</span>
+  </header>
+
+  <section class="rv-hero">
+    <article class="rv-panel">
+      <p class="rv-eyebrow">Foundation</p>
+      <h1 class="rv-title">Built for signal, speed, and stronger moderation.</h1>
+      <p class="rv-lead">
+        Runvster is being built from scratch as a community platform for builders who want sharp discussion,
+        cleaner product ergonomics, and less historical baggage.
+      </p>
+      <div class="rv-actions">
+        <a class="rv-button rv-button--primary" href="/up">Health Check</a>
+        <a class="rv-button rv-button--secondary" href="http://localhost:8025" target="_blank" rel="noreferrer">Mailpit</a>
+      </div>
+    </article>
+
+    <aside class="rv-panel rv-panel--accent">
+      <p class="rv-eyebrow">What Comes First</p>
+      <ul class="rv-list">
+        <li>
+          <span class="rv-kicker">Phase 1</span>
+          <p class="rv-body-copy">Authentication, profiles, posts, comments, votes, and tags.</p>
+        </li>
+        <li>
+          <span class="rv-kicker">Phase 2</span>
+          <p class="rv-body-copy">Moderation queue, audit trails, trust scoring, and notifications.</p>
+        </li>
+        <li>
+          <span class="rv-kicker">Phase 3</span>
+          <p class="rv-body-copy">Ranking, discovery, production hardening, and launch for runvster.runv.club.</p>
+        </li>
+      </ul>
+    </aside>
+  </section>
+
+  <section class="rv-grid" aria-label="platform pillars">
+    <article class="rv-panel">
+      <h2 class="rv-card-title">Community Core</h2>
+      <p class="rv-meta">Link and text posts, threaded discussion, voting, saved items, and curated tags.</p>
+    </article>
+
+    <article class="rv-panel">
+      <h2 class="rv-card-title">Moderation First</h2>
+      <p class="rv-meta">Reports, action logs, user notes, onboarding gates, and anti-abuse controls from day one.</p>
+    </article>
+
+    <article class="rv-panel">
+      <h2 class="rv-card-title">Operationally Simple</h2>
+      <p class="rv-meta">Rails monolith, PostgreSQL, Redis, Solid Queue, and Docker Compose for local and future deploys.</p>
+    </article>
+  </section>
+</main>

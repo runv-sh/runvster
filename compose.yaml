@@ -1,0 +1,100 @@
+name: runvster
+
+services:
+  web:
+    build:
+      context: .
+      dockerfile: docker/web/Dockerfile
+    working_dir: /workspace/apps/web
+    volumes:
+      - ./apps/web:/workspace/apps/web
+      - bundle_cache:/usr/local/bundle
+    environment:
+      RAILS_ENV: development
+      BUNDLE_PATH: /usr/local/bundle
+      DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@db:5432/${POSTGRES_DB:-runvster_development}
+      REDIS_URL: redis://redis:6379/1
+      SMTP_ADDRESS: mailpit
+      SMTP_PORT: 1025
+    ports:
+      - "${APP_PORT:-3000}:3000"
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_started
+      mailpit:
+        condition: service_started
+    command: >
+      bash -lc "
+      if [ -f bin/rails ]; then
+        bundle install &&
+        bundle exec rails db:prepare &&
+        rm -f tmp/pids/server.pid &&
+        bundle exec rails server -b 0.0.0.0 -p 3000;
+      else
+        echo 'apps/web is not bootstrapped yet. Run ./bin/bootstrap.sh or .\\bin\\bootstrap.ps1 first.';
+        sleep infinity;
+      fi
+      "
+
+  worker:
+    build:
+      context: .
+      dockerfile: docker/web/Dockerfile
+    working_dir: /workspace/apps/web
+    volumes:
+      - ./apps/web:/workspace/apps/web
+      - bundle_cache:/usr/local/bundle
+    environment:
+      RAILS_ENV: development
+      BUNDLE_PATH: /usr/local/bundle
+      DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@db:5432/${POSTGRES_DB:-runvster_development}
+      REDIS_URL: redis://redis:6379/1
+      SMTP_ADDRESS: mailpit
+      SMTP_PORT: 1025
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    command: >
+      bash -lc "
+      if [ -f bin/rails ]; then
+        bundle install &&
+        bundle exec rails db:prepare &&
+        bundle exec rails solid_queue:start;
+      else
+        echo 'Worker waiting for apps/web bootstrap.';
+        sleep infinity;
+      fi
+      "
+
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-runvster_development}
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-runvster_development}"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+
+  redis:
+    image: redis:7-alpine
+    volumes:
+      - redis_data:/data
+
+  mailpit:
+    image: axllent/mailpit:v1.24
+    ports:
+      - "${MAILPIT_WEB_PORT:-8025}:8025"
+
+volumes:
+  bundle_cache:
+  postgres_data:
+  redis_data:
