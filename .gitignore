@@ -1,17 +1,27 @@
 .env
+.env.local
+.env.*.local
+!.env.example
+
 .DS_Store
 Thumbs.db
 
-apps/web/.bundle
+.idea/
+.vscode/
+
+apps/web/.bundle/
 apps/web/log/*
 apps/web/tmp/*
 apps/web/storage/*
 apps/web/node_modules/*
 apps/web/coverage/*
+apps/web/vendor/bundle/*
+apps/web/.ruby-lsp/*
+apps/web/.byebug_history
 
 !apps/web/log/.keep
 !apps/web/tmp/.keep
+!apps/web/tmp/pids/.keep
+!apps/web/tmp/storage/.keep
 !apps/web/storage/.keep
-
-old/
 

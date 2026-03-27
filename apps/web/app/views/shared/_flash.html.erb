@@ -1,0 +1,7 @@
+<% flash.each do |type, message| %>
+  <div class="rv-flash rv-flash--<%= type %>">
+    <div class="rv-flash__inner">
+      <p><%= message %></p>
+    </div>
+  </div>
+<% end %>

@@ -1,0 +1,29 @@
+<%= render "shared/form_errors", record: post %>
+
+<%= form_with model: post, class: "rv-form" do |form| %>
+  <div class="rv-field">
+    <%= form.label :title, "Titulo" %>
+    <%= form.text_field :title, placeholder: "Ex: Como desenhar uma comunidade que cresce sem virar ruido" %>
+  </div>
+
+  <div class="rv-field">
+    <%= form.label :url, "Link externo" %>
+    <%= form.url_field :url, placeholder: "https://..." %>
+  </div>
+
+  <div class="rv-field">
+    <%= form.label :body, "Contexto" %>
+    <%= form.text_area :body, rows: 8, placeholder: "Adicione contexto, opiniao, pergunta ou uma tese para abrir a discussao." %>
+  </div>
+
+  <div class="rv-field">
+    <%= form.label :tag_names, "Tags" %>
+    <%= text_field_tag "post[tag_names]", post.tag_list, class: "rv-input", placeholder: "founders, infra, design" %>
+    <p class="rv-field-hint">Use entre 1 e 3 tags, separadas por virgula.</p>
+  </div>
+
+  <div class="rv-actions">
+    <%= form.submit "Publicar post", class: "rv-button rv-button--primary" %>
+    <%= link_to "Voltar ao feed", root_path, class: "rv-button rv-button--secondary" %>
+  </div>
+<% end %>

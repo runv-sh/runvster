@@ -1,0 +1,29 @@
+<% content_for :title, "Login | Runvster" %>
+
+<main class="rv-shell rv-shell--narrow">
+  <%= render "shared/topbar" %>
+
+  <section class="rv-auth">
+    <article class="rv-panel">
+      <p class="rv-eyebrow">Login</p>
+      <h1 class="rv-section-title rv-section-title--page">Acesse sua sessao.</h1>
+      <p class="rv-lead rv-lead--compact">O acesso fica disponivel diretamente pela rota `/login`.</p>
+
+      <%= form_with scope: :session, url: session_path, class: "rv-form" do |form| %>
+        <div class="rv-field">
+          <%= form.label :email, "Email" %>
+          <%= form.email_field :email, autofocus: true, placeholder: "voce@runv.club" %>
+        </div>
+
+        <div class="rv-field">
+          <%= form.label :password, "Senha" %>
+          <%= form.password_field :password, placeholder: "Sua senha" %>
+        </div>
+
+        <div class="rv-actions">
+          <%= form.submit "Login", class: "rv-button rv-button--primary" %>
+        </div>
+      <% end %>
+    </article>
+  </section>
+</main>

@@ -1,0 +1,53 @@
+<% content_for :title, "#{@post.title} | Runvster" %>
+
+<main class="rv-shell">
+  <%= render "shared/topbar" %>
+
+  <section class="rv-layout">
+    <div class="rv-column rv-column--main">
+      <article class="rv-panel rv-post-detail">
+        <div class="rv-pill-row rv-pill-row--spaced">
+          <% @post.tags.each do |tag| %>
+            <span class="rv-pill"><%= tag.name %></span>
+          <% end %>
+        </div>
+
+        <h1 class="rv-section-title rv-section-title--page"><%= @post.title %></h1>
+
+        <p class="rv-post-detail__meta">
+          publicado por <%= link_to "@#{@post.user.username}", user_path(@post.user), class: "rv-inline-link" %>
+          <span>·</span>
+          <%= l(@post.created_at, format: :long) %>
+        </p>
+
+        <% if @post.body.present? %>
+          <div class="rv-prose">
+            <%= simple_format(@post.body) %>
+          </div>
+        <% end %>
+
+        <% if @post.link_post? %>
+          <div class="rv-post-detail__actions">
+            <%= link_to "Abrir link original", @post.url, class: "rv-button rv-button--primary", target: "_blank", rel: "noreferrer" %>
+          </div>
+        <% end %>
+      </article>
+    </div>
+
+    <aside class="rv-column rv-column--side">
+      <article class="rv-panel">
+        <p class="rv-section-eyebrow">Autor</p>
+        <h2 class="rv-card-title">@<%= @post.user.username %></h2>
+        <p class="rv-meta"><%= @post.user.bio.presence || "Ainda sem bio publicada." %></p>
+      </article>
+
+      <article class="rv-panel">
+        <p class="rv-section-eyebrow">Mais do sistema</p>
+        <p class="rv-meta">
+          Comentarios e votos entram no proximo slice. Por enquanto, esse detalhe ja fecha o fluxo base de feed e
+          publicacao.
+        </p>
+      </article>
+    </aside>
+  </section>
+</main>

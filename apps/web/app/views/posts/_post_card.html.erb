@@ -1,0 +1,38 @@
+<li class="rv-feed-item">
+  <div class="rv-feed-item__rank">
+    <span><%= index + 1 %>.</span>
+  </div>
+
+  <div class="rv-feed-item__main">
+    <div class="rv-feed-item__headline">
+      <h2 class="rv-feed-item__title">
+        <%= link_to post.title, post_path(post) %>
+      </h2>
+
+      <% if post.link_post? && post.display_host.present? %>
+        <span class="rv-feed-item__host"><%= post.display_host %></span>
+      <% end %>
+    </div>
+
+    <p class="rv-feed-item__meta">
+      <span class="rv-feed-item__type"><%= post.link_post? ? "link" : "texto" %></span>
+      <span>por <%= link_to "@#{post.user.username}", user_path(post.user), class: "rv-inline-link" %></span>
+      <span>•</span>
+      <span><%= time_ago_in_words(post.created_at) %> atras</span>
+      <% if post.tags.any? %>
+        <span>•</span>
+        <span class="rv-feed-item__tags-inline">
+          <% post.tags.each do |tag| %>
+            <span class="rv-feed-item__tag"><%= tag.name %></span>
+          <% end %>
+        </span>
+      <% end %>
+      <span>•</span>
+      <%= link_to "abrir", post_path(post), class: "rv-inline-link" %>
+    </p>
+
+    <% if post.body.present? %>
+      <p class="rv-feed-item__summary"><%= truncate(post.body, length: 180) %></p>
+    <% end %>
+  </div>
+</li>

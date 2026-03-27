@@ -1,0 +1,42 @@
+<% content_for :title, "@#{@user.username} | Runvster" %>
+
+<main class="rv-shell">
+  <%= render "shared/topbar" %>
+
+  <section class="rv-layout">
+    <div class="rv-column rv-column--main">
+      <article class="rv-panel">
+        <p class="rv-section-eyebrow">Profile</p>
+        <h1 class="rv-section-title rv-section-title--page">@<%= @user.username %></h1>
+        <p class="rv-lead rv-lead--compact"><%= @user.bio.presence || "Pessoa builder ainda sem bio publicada." %></p>
+      </article>
+
+      <div class="rv-section-head">
+        <div>
+          <p class="rv-section-eyebrow">Posts</p>
+          <h2 class="rv-section-title">Publicados por @<%= @user.username %></h2>
+        </div>
+      </div>
+
+      <% if @posts.any? %>
+        <div class="rv-stack">
+          <% @posts.each_with_index do |post, index| %>
+            <%= render "posts/post_card", post: post, index: index %>
+          <% end %>
+        </div>
+      <% else %>
+        <article class="rv-empty">
+          <h3>Nenhum post ainda.</h3>
+          <p>Esse perfil ainda nao publicou nada no alpha.</p>
+        </article>
+      <% end %>
+    </div>
+
+    <aside class="rv-column rv-column--side">
+      <article class="rv-panel">
+        <p class="rv-section-eyebrow">Stats</p>
+        <p class="rv-meta"><%= pluralize(@user.posts_count, "post") %> publicados ate agora.</p>
+      </article>
+    </aside>
+  </section>
+</main>

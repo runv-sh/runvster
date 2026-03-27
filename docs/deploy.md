@@ -1,68 +1,53 @@
-# Runvster Deploy Plan
+# Deploy
 
 ## Target
 
-Primary production target:
+Primary target domain:
 
 - `runvster.runv.club`
 
-## Production Shape
+## Current State
 
-Runvster should ship as a small Docker-based stack:
+Production deployment is not finished yet.
 
-- `web`
-- `worker`
-- `postgres`
-- `redis`
+The project runs locally in Docker, but it still needs production-specific files and environment wiring.
+
+## Expected Production Shape
+
 - reverse proxy with TLS
+- Rails web container
+- Rails worker container
+- PostgreSQL
+- Redis
 
-Mailpit is local-only and should not go to production.
+Mailpit should stay local only.
 
-## Minimum Production Requirements
+## Minimum Production Inputs
 
 - DNS for `runvster.runv.club`
-- Linux host or VPS with Docker and Compose
-- persistent volume for PostgreSQL
-- persistent volume or managed storage for uploads
-- TLS termination
-- SMTP provider
-- Rails secrets and environment variables
-
-## Environment Variables We Will Need
-
-- `RAILS_ENV=production`
-- `APP_HOST=runvster.runv.club`
+- Linux host or VPS with Docker Compose
 - `SECRET_KEY_BASE`
-- `DATABASE_URL`
-- `REDIS_URL`
-- `RUNVSTER_DATABASE_PASSWORD`
-- `SMTP_ADDRESS`
-- `SMTP_PORT`
-- `SMTP_USERNAME`
-- `SMTP_PASSWORD`
+- production `DATABASE_URL`
+- production `REDIS_URL`
+- SMTP provider credentials
+- persistent database volume
 
-## Production Tasks Before Launch
+## Production Checklist
 
-1. Set `config.hosts` for `runvster.runv.club`.
-2. Replace placeholder mailer host values with the production domain.
-3. Choose Active Storage target:
-   - local volume for simple VPS setup
-   - S3-compatible bucket for cleaner scaling
-4. Add backups for PostgreSQL.
-5. Add uptime and error monitoring.
-6. Add deploy script or production Compose file.
-7. Create first admin account and seed baseline data.
+1. add production environment variables
+2. set `APP_HOST=runvster.runv.club`
+3. define production compose or deploy stack
+4. wire reverse proxy and TLS
+5. configure Active Storage target
+6. create backups for PostgreSQL
+7. add monitoring and error tracking
+8. create first admin account
 
-## Recommended Next Production File
+## Missing Artifacts
 
-When we start deploy work for real, the next infrastructure artifact should be:
+These files do not exist yet and still need to be created:
 
 - `compose.production.yaml`
-
-That file should keep the same services we already use locally, but with:
-
-- no dev-only bind mounts
-- production env vars
-- restart policies
-- reverse proxy integration
-- real SMTP and storage settings
+- reverse proxy config
+- production secret management strategy
+- deployment script or CI/CD pipeline

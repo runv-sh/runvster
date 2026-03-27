@@ -1,0 +1,10 @@
+<% if record.errors.any? %>
+  <section class="rv-form-errors" aria-labelledby="<%= dom_id(record, :errors) %>">
+    <h2 id="<%= dom_id(record, :errors) %>">Ainda falta ajustar alguns pontos.</h2>
+    <ul>
+      <% record.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+    </ul>
+  </section>
+<% end %>

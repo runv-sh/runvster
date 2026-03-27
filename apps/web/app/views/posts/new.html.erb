@@ -1,0 +1,39 @@
+<% content_for :title, "Novo Post | Runvster" %>
+
+<main class="rv-shell">
+  <%= render "shared/topbar" %>
+
+  <section class="rv-layout">
+    <div class="rv-column rv-column--main">
+      <article class="rv-panel">
+        <p class="rv-eyebrow">Publish</p>
+        <h1 class="rv-section-title rv-section-title--page">Publique algo que mereca resposta.</h1>
+        <p class="rv-lead rv-lead--compact">
+          Link externo ou post de texto: os dois cabem aqui, desde que tragam contexto e uma boa conversa.
+        </p>
+
+        <%= render "form", post: @post %>
+      </article>
+    </div>
+
+    <aside class="rv-column rv-column--side">
+      <article class="rv-panel rv-panel--accent">
+        <p class="rv-eyebrow">Boas praticas</p>
+        <ul class="rv-list">
+          <li>
+            <span class="rv-kicker">Contexto</span>
+            <p class="rv-body-copy">Explique por que esse link ou tema importa agora.</p>
+          </li>
+          <li>
+            <span class="rv-kicker">Curadoria</span>
+            <p class="rv-body-copy">Use poucas tags, mas tags fortes. Isso melhora a descoberta.</p>
+          </li>
+          <li>
+            <span class="rv-kicker">Tom</span>
+            <p class="rv-body-copy">Abra discussao. Nao publique so para despejar link.</p>
+          </li>
+        </ul>
+      </article>
+    </aside>
+  </section>
+</main>

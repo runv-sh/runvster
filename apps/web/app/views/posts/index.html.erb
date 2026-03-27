@@ -1,0 +1,48 @@
+<% content_for :title, "Runvster Feed" %>
+
+<main class="rv-shell rv-shell--feed">
+  <%= render "shared/topbar" %>
+
+  <section class="rv-feed-page">
+    <div class="rv-feed-bar">
+      <nav class="rv-feed-tabs" aria-label="Feed filters">
+        <%= link_to "Recentes", root_path, class: @feed_tab == "recentes" ? "rv-feed-tab rv-feed-tab--active" : "rv-feed-tab" %>
+        <%= link_to "Top", top_posts_path, class: @feed_tab == "top" ? "rv-feed-tab rv-feed-tab--active" : "rv-feed-tab" %>
+        <%= link_to "Links", link_posts_path, class: @feed_tab == "links" ? "rv-feed-tab rv-feed-tab--active" : "rv-feed-tab" %>
+        <%= link_to "Discussao", discussion_posts_path, class: @feed_tab == "discussao" ? "rv-feed-tab rv-feed-tab--active" : "rv-feed-tab" %>
+      </nav>
+
+      <div class="rv-feed-bar__meta">
+        <p class="rv-feed-count">
+          <strong><%= @posts.size %></strong>
+          <%= @posts.size == 1 ? "post" : "posts" %>
+        </p>
+
+        <% if authenticated? %>
+          <%= link_to "Novo post", new_post_path, class: "rv-nav__link rv-nav__link--accent" %>
+        <% end %>
+      </div>
+    </div>
+
+    <section class="rv-feed-stream rv-feed-stream--flat">
+      <% if @posts.any? %>
+        <ol class="rv-feed-list">
+          <% @posts.each_with_index do |post, index| %>
+            <%= render "post_card", post: post, index: index %>
+          <% end %>
+        </ol>
+      <% else %>
+        <article class="rv-empty rv-empty--list">
+          <h3>O feed esta pronto para receber a primeira conversa.</h3>
+          <p>
+            <% if authenticated? %>
+              Voce ja pode abrir o alpha com um primeiro post e começar a puxar o tom da comunidade.
+            <% else %>
+              Crie a primeira conta para publicar e testar o fluxo ponta a ponta.
+            <% end %>
+          </p>
+        </article>
+      <% end %>
+    </section>
+  </section>
+</main>

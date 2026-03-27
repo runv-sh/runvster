@@ -1,0 +1,18 @@
+<header class="rv-topbar">
+  <div class="rv-topbar__brand">
+    <%= link_to root_path, class: "rv-brand" do %>
+      <%= image_tag "runvster.png", alt: "Runvster", class: "rv-brand-mark" %>
+      <span class="rv-brand-name">Runvster</span>
+    <% end %>
+  </div>
+
+  <nav class="rv-nav" aria-label="Primary">
+    <%= link_to "Feed", root_path, class: "rv-nav__link" %>
+
+    <% if authenticated? %>
+      <%= link_to "Publicar", new_post_path, class: "rv-nav__link rv-nav__link--accent" %>
+      <%= link_to "@#{current_user.username}", user_path(current_user), class: "rv-nav__link" %>
+      <%= button_to "Sair", sign_out_path, method: :delete, class: "rv-button rv-button--ghost rv-button--tiny" %>
+    <% end %>
+  </nav>
+</header>

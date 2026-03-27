@@ -1,0 +1,48 @@
+<% content_for :title, "Criar Conta | Runvster" %>
+
+<main class="rv-shell rv-shell--narrow">
+  <%= render "shared/topbar" %>
+
+  <section class="rv-auth">
+    <article class="rv-panel">
+      <p class="rv-eyebrow">Onboarding</p>
+      <h1 class="rv-section-title rv-section-title--page">Abra a primeira camada da comunidade.</h1>
+      <p class="rv-lead rv-lead--compact">
+        Esse fluxo ja cria conta, inicia sessao e te leva direto para publicar no alpha.
+      </p>
+
+      <%= render "shared/form_errors", record: @user %>
+
+      <%= form_with model: @user, url: users_path, class: "rv-form" do |form| %>
+        <div class="rv-field">
+          <%= form.label :username, "Username" %>
+          <%= form.text_field :username, autofocus: true, placeholder: "runvster" %>
+        </div>
+
+        <div class="rv-field">
+          <%= form.label :email, "Email" %>
+          <%= form.email_field :email, placeholder: "voce@runv.club" %>
+        </div>
+
+        <div class="rv-field">
+          <%= form.label :bio, "Bio curta" %>
+          <%= form.text_area :bio, rows: 4, placeholder: "O que voce constroi, opera ou pesquisa?" %>
+        </div>
+
+        <div class="rv-field">
+          <%= form.label :password, "Senha" %>
+          <%= form.password_field :password, placeholder: "Minimo de 8 caracteres" %>
+        </div>
+
+        <div class="rv-field">
+          <%= form.label :password_confirmation, "Confirmar senha" %>
+          <%= form.password_field :password_confirmation, placeholder: "Repita a senha" %>
+        </div>
+
+        <div class="rv-actions">
+          <%= form.submit "Criar conta", class: "rv-button rv-button--primary" %>
+        </div>
+      <% end %>
+    </article>
+  </section>
+</main>
