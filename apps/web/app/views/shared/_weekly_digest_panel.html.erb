@@ -1,0 +1,59 @@
+<article class="rv-panel rv-dashboard-panel">
+  <p class="rv-section-eyebrow">Resumo semanal</p>
+  <h2 class="rv-card-title">Receba novidades por email</h2>
+
+  <% if current_user.email_verified? %>
+    <p class="rv-meta">
+      <% if current_user.weekly_digest_enabled? %>
+        Ativo. O resumo semanal so e enviado quando houver novidades desde
+        <strong><%= l(summary.window_start, format: :long) %></strong>.
+      <% else %>
+        Desativado. Ative para receber um email semanal com notificacoes e posts novos da comunidade quando houver novidade.
+      <% end %>
+    </p>
+
+    <ul class="rv-dashboard-list">
+      <li>
+        <strong><%= summary.notifications_count %></strong>
+        <span><%= summary.notifications_count == 1 ? "notificacao nova pronta para entrar no digest" : "notificacoes novas prontas para entrar no digest" %></span>
+      </li>
+      <li>
+        <strong><%= summary.new_posts_count %></strong>
+        <span><%= summary.new_posts_count == 1 ? "post novo da comunidade desde o ultimo ciclo" : "posts novos da comunidade desde o ultimo ciclo" %></span>
+      </li>
+      <li>
+        <strong><%= current_user.last_digest_sent_at.present? ? l(current_user.last_digest_sent_at, format: :long) : "ainda nao enviado" %></strong>
+        <span>ultimo envio registrado</span>
+      </li>
+    </ul>
+
+    <% if summary.new_posts.any? %>
+      <div class="rv-digest-preview">
+        <p class="rv-meta"><strong>Novidades recentes</strong></p>
+        <ul class="rv-dashboard-list">
+          <% summary.new_posts.first(3).each do |post| %>
+            <li>
+              <strong><%= link_to post.title, post_path(post), class: "rv-inline-link" %></strong>
+              <span>por @<%= post.user.username %> · <%= time_ago_in_words(post.created_at) %> atras</span>
+            </li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+
+    <div class="rv-actions">
+      <%= button_to current_user.weekly_digest_enabled? ? "Desativar resumo semanal" : "Ativar resumo semanal",
+        dashboard_digest_path,
+        method: :patch,
+        params: { digest: { enabled: !current_user.weekly_digest_enabled? } },
+        class: "rv-button rv-button--secondary rv-button--tiny" %>
+    </div>
+  <% else %>
+    <p class="rv-meta">
+      Confirme seu email para receber o resumo semanal. Quando estiver ativo, ele mostra notificacoes e posts novos da comunidade se houver novidades.
+    </p>
+    <div class="rv-actions">
+      <%= button_to "Reenviar confirmacao", email_confirmation_path, method: :post, class: "rv-button rv-button--secondary rv-button--tiny" %>
+    </div>
+  <% end %>
+</article>

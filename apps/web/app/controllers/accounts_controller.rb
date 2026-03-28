@@ -3,6 +3,8 @@ class AccountsController < ApplicationController
 
   def edit
     @user = current_user
+    @api_tokens = current_user.api_tokens.recent_first.limit(12)
+    @fresh_api_token = session.delete(:last_created_api_token)
   end
 
   def update

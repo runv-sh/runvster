@@ -2,15 +2,18 @@
 
 <main class="rv-shell rv-shell--dashboard">
   <%= render "shared/topbar" %>
+  <%= render "shared/section_nav",
+    items: current_user.admin? ? admin_section_nav_items : member_section_nav_items,
+    aria_label: current_user.admin? ? "Navegacao administrativa" : "Navegacao da conta" %>
 
   <% if current_user.admin? %>
     <section class="rv-dashboard rv-dashboard--admin">
       <article class="rv-dashboard-hero rv-dashboard-hero--admin">
         <div>
           <p class="rv-dashboard-eyebrow">Admin Control</p>
-          <h1 class="rv-dashboard-title">Painel de operacao da comunidade.</h1>
+          <h1 class="rv-dashboard-title">Painel de operacao da comunidade</h1>
           <p class="rv-dashboard-copy">
-            Voce opera entrada, convites, moderacao, atividade recente e politicas da comunidade a partir daqui.
+            Centralize entrada, convites, moderacao, atividade recente e politicas da comunidade num unico lugar.
           </p>
         </div>
 
@@ -61,6 +64,14 @@
             </div>
           <% end %>
         </article>
+
+        <%= render "shared/api_tokens_panel",
+          api_tokens: @api_tokens,
+          fresh_api_token: @fresh_api_token,
+          title: "Tokens para integracoes e dashboards",
+          description: "Gere um bearer token pessoal para consumir a API sem depender da sessao web." %>
+
+        <%= render "shared/weekly_digest_panel", summary: @weekly_digest_summary %>
 
         <article class="rv-panel rv-dashboard-panel">
           <p class="rv-section-eyebrow">Entrada recente</p>
@@ -178,9 +189,9 @@
       <article class="rv-dashboard-hero rv-dashboard-hero--member">
         <div>
           <p class="rv-dashboard-eyebrow"><%= current_user.staff? ? "Moderator Space" : "Member Space" %></p>
-          <h1 class="rv-dashboard-title"><%= current_user.staff? ? "Seu painel de moderacao e participacao." : "Seu cockpit de participacao." %></h1>
+          <h1 class="rv-dashboard-title"><%= current_user.staff? ? "Seu painel de moderacao e participacao" : "Seu painel de participacao" %></h1>
           <p class="rv-dashboard-copy">
-            Aqui voce acompanha seus posts, convites, inbox, confirmacao de email e o estado atual da sua participacao na comunidade.
+            Acompanhe posts, convites, inbox, confirmacao de email e o estado atual da sua participacao na comunidade.
           </p>
         </div>
 
@@ -251,7 +262,7 @@
 
         <article class="rv-panel rv-dashboard-panel rv-dashboard-panel--member-accent">
           <p class="rv-section-eyebrow">Convites</p>
-          <h2 class="rv-card-title">Traga gente boa quando seu acesso amadurecer.</h2>
+          <h2 class="rv-card-title">Convide gente boa quando seu acesso amadurecer</h2>
 
           <% if current_user.can_send_invite? %>
             <p class="rv-meta">
@@ -281,6 +292,14 @@
           <% end %>
         </article>
 
+        <%= render "shared/api_tokens_panel",
+          api_tokens: @api_tokens,
+          fresh_api_token: @fresh_api_token,
+          title: "Tokens para usar a API",
+          description: "Crie um token pessoal para scripts, automacoes e dashboards externas falarem com /api/v1." %>
+
+        <%= render "shared/weekly_digest_panel", summary: @weekly_digest_summary %>
+
         <article class="rv-panel rv-dashboard-panel">
           <p class="rv-section-eyebrow">Seu backlog</p>
           <h2 class="rv-card-title">Posts recentes</h2>
@@ -295,7 +314,7 @@
               <% end %>
             </ul>
           <% else %>
-            <p class="rv-meta">Voce ainda nao publicou nada. Seu primeiro post pode definir o tom do espaco.</p>
+            <p class="rv-meta">Voce ainda nao publicou nada. Seu primeiro post pode ajudar a definir o tom do espaco.</p>
           <% end %>
         </article>
 

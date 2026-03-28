@@ -4,6 +4,9 @@ class DashboardController < ApplicationController
   def show
     @recent_posts = current_user.posts.recent_first.limit(5)
     @recent_invitations = invitations_scope.recent_first.limit(8)
+    @api_tokens = current_user.api_tokens.recent_first.limit(8)
+    @fresh_api_token = session.delete(:last_created_api_token)
+    @weekly_digest_summary = NotificationDigestSummary.new(user: current_user, frequency: "weekly")
     @pending_invitations_count = invitations_scope.pending.count
     @notifications = current_user.notifications.recent_first.limit(6)
     @open_reports_count = current_user.staff? ? ModerationCase.open.count : current_user.reported_moderation_cases.open.count

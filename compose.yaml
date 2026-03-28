@@ -62,12 +62,13 @@ services:
         condition: service_healthy
       redis:
         condition: service_started
+      web:
+        condition: service_started
     command: >
       bash -lc "
       if [ -f bin/rails ]; then
         bundle install &&
-        bundle exec rails db:prepare &&
-        bundle exec rails solid_queue:start;
+        bundle exec ruby bin/jobs start;
       else
         echo 'Worker waiting for apps/web bootstrap.';
         sleep infinity;
@@ -102,3 +103,4 @@ volumes:
   bundle_cache:
   postgres_data:
   redis_data:
+

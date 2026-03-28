@@ -7,6 +7,7 @@ class User < ApplicationRecord
   has_many :posts, dependent: :destroy
   has_many :comments, dependent: :destroy
   has_many :votes, dependent: :destroy
+  has_many :api_tokens, dependent: :destroy
   has_many :hidden_posts, class_name: "Post", foreign_key: :hidden_by_id, dependent: :nullify, inverse_of: :hidden_by
   has_many :hidden_comments, class_name: "Comment", foreign_key: :hidden_by_id, dependent: :nullify, inverse_of: :hidden_by
   has_many :sent_invitations, class_name: "Invitation", foreign_key: :inviter_id, dependent: :destroy, inverse_of: :inviter
@@ -166,6 +167,10 @@ class User < ApplicationRecord
     notifications.unread.count
   end
 
+  def active_api_tokens_count
+    api_tokens.active.count
+  end
+
   def prefers_notification?(kind)
     case kind
     when "comment_created"
@@ -181,6 +186,14 @@ class User < ApplicationRecord
 
   def digest_window_start
     last_digest_sent_at || (weekly? ? 1.week.ago : 1.day.ago)
+  end
+
+  def digest_window_start_for(frequency)
+    last_digest_sent_at || (frequency.to_s == "weekly" ? 1.week.ago : 1.day.ago)
+  end
+
+  def weekly_digest_enabled?
+    digest_frequency == "weekly"
   end
 
   private

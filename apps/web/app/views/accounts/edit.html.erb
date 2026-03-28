@@ -2,11 +2,12 @@
 
 <main class="rv-shell rv-shell--narrow">
   <%= render "shared/topbar" %>
+  <%= render "shared/section_nav", items: member_section_nav_items, aria_label: "Navegacao da conta" %>
 
   <section class="rv-stack">
     <article class="rv-panel">
       <p class="rv-section-eyebrow">Conta</p>
-      <h1 class="rv-section-title rv-section-title--page">Gerencie seu perfil e seu ruido.</h1>
+      <h1 class="rv-section-title rv-section-title--page">Perfil, email e preferencias</h1>
 
       <div class="rv-banner <%= current_user.email_verified? ? "rv-banner--success" : "rv-banner--warning" %>">
         <div>
@@ -15,7 +16,7 @@
             <% if current_user.email_verified? %>
               Seu email <strong><%= current_user.email %></strong> ja pode receber notificacoes, resumos e fluxos de recuperacao.
             <% else %>
-              O email <strong><%= current_user.email %></strong> ainda nao foi confirmado. Confirme para destravar recuperacao de senha e operacao por email.
+              O email <strong><%= current_user.email %></strong> ainda nao foi confirmado. Confirme para liberar recuperacao de senha e fluxos por email.
             <% end %>
           </p>
         </div>
@@ -44,8 +45,10 @@
         </div>
 
         <div class="rv-field">
-          <%= form.label :digest_frequency, "Resumo por email" %>
-          <%= form.select :digest_frequency, User.digest_frequencies.keys.map { |value| [ value == "off" ? "Desligado" : value.humanize, value ] }, {}, class: "rv-input" %>
+          <%= form.label :digest_frequency, "Resumo semanal por email" %>
+          <% digest_options = [["Desligado", "off"], ["Semanal", "weekly"]] %>
+          <% digest_options << ["Diario (legado)", "daily"] if current_user.daily? %>
+          <%= form.select :digest_frequency, digest_options, {}, class: "rv-input" %>
         </div>
 
         <div class="rv-check-grid">
@@ -73,5 +76,11 @@
         </div>
       <% end %>
     </article>
+
+    <%= render "shared/api_tokens_panel",
+      api_tokens: @api_tokens,
+      fresh_api_token: @fresh_api_token,
+      title: "Tokens de acesso",
+      description: "Use bearer tokens para scripts, CLIs e dashboards externas consumirem a API com a sua conta." %>
   </section>
 </main>

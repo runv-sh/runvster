@@ -1,0 +1,8 @@
+<% return if items.blank? %>
+
+<nav class="rv-section-nav" aria-label="<%= local_assigns.fetch(:aria_label, "Secoes internas") %>">
+  <% items.each do |item| %>
+    <% active = item.key?(:active) ? item[:active] : current_page?(item[:path]) %>
+    <%= link_to item[:label], item[:path], class: active ? "rv-section-nav__link rv-section-nav__link--active" : "rv-section-nav__link" %>
+  <% end %>
+</nav>

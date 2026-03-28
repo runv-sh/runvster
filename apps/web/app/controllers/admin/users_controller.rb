@@ -8,7 +8,7 @@ module Admin
     end
 
     def update
-      user = User.find(params[:id])
+      user = find_user
       previous_role = user.role
       previous_state = user.account_state
       next_role = user_params[:role].to_s
@@ -37,7 +37,7 @@ module Admin
     end
 
     def destroy
-      user = User.find(params[:id])
+      user = find_user
 
       if user == current_user
         return redirect_to admin_users_path, alert: "Nao e possivel excluir a propria conta por este painel."
@@ -68,6 +68,10 @@ module Admin
       else
         params.expect(user: [ :account_state, :moderation_note, :suspended_until ])
       end
+    end
+
+    def find_user
+      User.find_by(id: params[:id]) || User.find_by!(username: params[:id].to_s.downcase)
     end
   end
 end

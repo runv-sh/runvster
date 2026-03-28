@@ -19,122 +19,122 @@
   <% end %>
 <% end %>
 
-<main class="rv-shell">
+<main class="rv-shell rv-shell--reading">
   <%= render "shared/topbar" %>
 
-  <section class="rv-layout">
-    <div class="rv-column rv-column--main">
-      <article class="rv-panel rv-post-detail">
-        <% if @post.hidden? && staff_member? %>
-          <div class="rv-banner rv-banner--warning">
-            <strong>Post ocultado</strong>
-            <p class="rv-meta"><%= @post.hidden_reason.presence || "Ocultado pela moderacao." %></p>
-          </div>
-        <% end %>
-
-        <div class="rv-pill-row rv-pill-row--spaced">
-          <% @post.tags.each do |tag| %>
-            <%= link_to tag.name, tag_path(tag), class: "rv-pill" %>
-          <% end %>
+  <section class="rv-reading-layout rv-reading-layout--single">
+    <article class="rv-post-detail rv-post-detail--flat">
+      <% if @post.hidden? && staff_member? %>
+        <div class="rv-banner rv-banner--warning">
+          <strong>Post ocultado</strong>
+          <p class="rv-meta"><%= @post.hidden_reason.presence || "Ocultado pela moderacao." %></p>
         </div>
+      <% end %>
 
-        <h1 class="rv-section-title rv-section-title--page"><%= @post.title %></h1>
-
-        <p class="rv-post-detail__meta">
-          publicado por <%= link_to "@#{@post.user.username}", user_path(@post.user), class: "rv-inline-link" %>
-          <span>·</span>
-          <%= l(@post.created_at, format: :long) %>
-          <% if @post.edited_at.present? %>
-            <span>·</span>
-            editado em <%= l(@post.edited_at, format: :long) %>
-          <% end %>
-        </p>
-
-        <% if @post.body.present? %>
-          <div class="rv-prose">
-            <%= simple_format(@post.body) %>
-          </div>
-        <% end %>
-
-        <% if @post.thumbnail? %>
-          <div class="rv-link-preview">
-            <%= image_tag @post.thumbnail_url, alt: "Thumbnail do link compartilhado", class: "rv-link-preview__image", loading: "lazy", referrerpolicy: "no-referrer" %>
-            <div class="rv-link-preview__content">
-              <p class="rv-link-preview__eyebrow">Preview do link</p>
-              <p class="rv-link-preview__host"><%= @post.display_host.presence || "link externo" %></p>
-            </div>
-          </div>
-        <% end %>
-
-        <div class="rv-post-detail__engagement">
+      <div class="rv-story-frame">
+        <div class="rv-story-frame__vote">
           <%= render "shared/vote_controls", post: @post %>
-          <p class="rv-meta"><strong><%= @post.score %></strong> pontos · <strong><%= @post.comments_count %></strong> comentarios</p>
         </div>
 
-        <% if @post.link_post? %>
-          <div class="rv-post-detail__actions">
-            <%= link_to "Abrir link original", @post.url, class: "rv-button rv-button--primary", target: "_blank", rel: "noreferrer" %>
-          </div>
-        <% end %>
+        <div class="rv-story-frame__body">
+          <div class="rv-post-detail__headline">
+            <h1 class="rv-feed-item__title rv-feed-item__title--detail"><%= @post.title %></h1>
 
-        <% if authenticated? %>
-          <div class="rv-post-detail__actions">
-            <% if @post.editable_by?(current_user) %>
-              <%= link_to "Editar post", edit_post_path(@post), class: "rv-button rv-button--secondary rv-button--tiny" %>
-              <%= button_to "Excluir post", post_path(@post), method: :delete, class: "rv-button rv-button--ghost rv-button--tiny", form: { data: { turbo_confirm: "Excluir este post?" } } %>
+            <% if @post.tags.any? %>
+              <span class="rv-feed-item__tags-inline">
+                <% @post.tags.each do |tag| %>
+                  <%= link_to tag.name, tag_path(tag), class: "rv-feed-item__tag" %>
+                <% end %>
+              </span>
             <% end %>
-            <%= render "shared/moderation_form", reportable: @post if current_user != @post.user %>
+
+            <% if @post.link_post? && @post.display_host.present? %>
+              <em class="rv-feed-item__host rv-feed-item__host--detail"><%= @post.display_host %></em>
+            <% end %>
           </div>
-        <% end %>
-      </article>
 
-      <article class="rv-panel">
-        <p class="rv-section-eyebrow">Discussao</p>
-        <h2 class="rv-card-title">Comentarios</h2>
+          <p class="rv-feed-item__meta rv-feed-item__meta--detail">
+            <span><%= @post.link_post? ? "via" : "por" %> <%= link_to "@#{@post.user.username}", user_path(@post.user), class: "rv-inline-link" %></span>
+            <span>|</span>
+            <span title="<%= l(@post.created_at, format: :long) %>"><%= time_ago_in_words(@post.created_at) %> atras</span>
+            <span>|</span>
+            <span><%= @post.score %> pontos</span>
+            <span>|</span>
+            <span><%= pluralize(@post.comments_count, "comentario") %></span>
+            <% if @post.edited_at.present? %>
+              <span>|</span>
+              <span>editado</span>
+            <% end %>
+          </p>
 
-        <% if authenticated? %>
-          <%= form_with model: [ @post, @comment ], class: "rv-form" do |form| %>
-            <div class="rv-field">
-              <%= form.label :body, "Participe da conversa" %>
-              <%= form.text_area :body, rows: 5, placeholder: "Adicione um comentario que mova a conversa para frente." %>
-            </div>
-            <div class="rv-actions">
-              <%= form.submit "Publicar comentario", class: "rv-button rv-button--primary" %>
+          <% if @post.body.present? %>
+            <div class="rv-prose rv-prose--reading">
+              <%= simple_format(@post.body) %>
             </div>
           <% end %>
-        <% else %>
-          <p class="rv-meta">Entre na sua conta para comentar e votar.</p>
-        <% end %>
 
-        <% if @root_comments.any? %>
-          <div class="rv-comments">
-            <% @root_comments.each do |comment| %>
-              <%= render "comments/comment", comment: comment, post: @post %>
-            <% end %>
+          <% if @post.thumbnail? %>
+            <div class="rv-link-preview rv-link-preview--flat">
+              <%= image_tag @post.thumbnail_url, alt: "Thumbnail do link compartilhado", class: "rv-link-preview__image", loading: "lazy", referrerpolicy: "no-referrer" %>
+              <div class="rv-link-preview__content">
+                <p class="rv-link-preview__eyebrow">Preview do link</p>
+                <p class="rv-link-preview__host"><%= @post.display_host.presence || "link externo" %></p>
+              </div>
+            </div>
+          <% end %>
+
+          <div class="rv-post-detail__footer">
+            <div class="rv-post-detail__footer-links">
+              <% if @post.link_post? %>
+                <%= link_to "link original", @post.url, class: "rv-inline-link", target: "_blank", rel: "noreferrer" %>
+              <% end %>
+
+              <% if authenticated? && @post.editable_by?(current_user) %>
+                <%= link_to "editar", edit_post_path(@post), class: "rv-inline-link" %>
+                <%= button_to "excluir", post_path(@post), method: :delete, class: "rv-button rv-button--ghost rv-button--tiny", form: { data: { turbo_confirm: "Excluir este post?" } } %>
+              <% end %>
+            </div>
           </div>
-        <% else %>
-          <article class="rv-empty">
-            <h3>A discussao ainda nao comecou.</h3>
-            <p>Esse post esta pronto para receber a primeira resposta.</p>
-          </article>
+
+          <% if authenticated? && current_user != @post.user %>
+            <div class="rv-post-detail__moderation">
+              <%= render "shared/moderation_form", reportable: @post %>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </article>
+
+    <section class="rv-panel rv-panel--flat rv-comments-panel">
+      <p class="rv-section-eyebrow">Conversa</p>
+      <h2 class="rv-card-title">Comentarios</h2>
+
+      <% if authenticated? %>
+        <%= form_with model: [ @post, @comment ], class: "rv-form rv-form--compact" do |form| %>
+          <div class="rv-field">
+            <%= form.label :body, "Participe da conversa" %>
+            <%= form.text_area :body, rows: 4, placeholder: "Adicione um comentario que mova a conversa para frente." %>
+          </div>
+          <div class="rv-actions">
+            <%= form.submit "Publicar comentario", class: "rv-button rv-button--secondary rv-button--tiny" %>
+          </div>
         <% end %>
-      </article>
-    </div>
+      <% else %>
+        <p class="rv-meta">Entre para comentar e votar.</p>
+      <% end %>
 
-    <aside class="rv-column rv-column--side">
-      <article class="rv-panel">
-        <p class="rv-section-eyebrow">Autor</p>
-        <h2 class="rv-card-title">@<%= @post.user.username %></h2>
-        <p class="rv-meta"><%= @post.user.bio.presence || "Ainda sem bio publicada." %></p>
-        <p class="rv-meta"><%= @post.user.email_verified? ? "email confirmado" : "email ainda nao confirmado" %></p>
-      </article>
-
-      <article class="rv-panel">
-        <p class="rv-section-eyebrow">Mais do sistema</p>
-        <p class="rv-meta">
-          O feed agora usa score, comentarios e recencia para ranqueamento. Tags tambem ganharam paginas dedicadas.
-        </p>
-      </article>
-    </aside>
+      <% if @root_comments.any? %>
+        <div class="rv-comments">
+          <% @root_comments.each do |comment| %>
+            <%= render "comments/comment", comment: comment, post: @post %>
+          <% end %>
+        </div>
+      <% else %>
+        <article class="rv-empty rv-empty--soft rv-empty--commentary">
+          <h3>A conversa ainda nao comecou.</h3>
+          <p>Esse post esta pronto para receber a primeira resposta.</p>
+        </article>
+      <% end %>
+    </section>
   </section>
 </main>

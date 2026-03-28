@@ -20,7 +20,10 @@
       <%= link_to "Publicar", new_post_path, class: "rv-nav__link rv-nav__link--accent" %>
       <%= link_to "Conta", edit_account_path, class: "rv-nav__link" %>
       <%= link_to "@#{current_user.username}", user_path(current_user), class: "rv-nav__link" %>
+      <button type="button" class="rv-theme-toggle" data-theme-toggle aria-label="Alternar tema">Claro</button>
       <%= button_to "Sair", sign_out_path, method: :delete, class: "rv-button rv-button--ghost rv-button--tiny" %>
+    <% else %>
+      <button type="button" class="rv-theme-toggle" data-theme-toggle aria-label="Alternar tema">Claro</button>
     <% end %>
   </nav>
 </header>

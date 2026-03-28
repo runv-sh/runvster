@@ -5,6 +5,7 @@
 | Method | Path | Purpose |
 | --- | --- | --- |
 | `GET` | `/` | Recent feed |
+| `GET` | `/rss` | RSS feed of the current stream |
 | `GET` | `/top` | Top feed |
 | `GET` | `/links` | Link-only feed |
 | `GET` | `/discussao` | Text discussion feed |
@@ -70,5 +71,6 @@
 ## Notes
 
 - The feed tabs shown in the UI are backed by real routes.
+- `/rss` reuses the same feed filters (`tab`, `q`, `tag`, `author`, `period`) and emits the newest 50 matching posts.
 - `/login` is the canonical login entry point.
 - signup is invitation-only after the first admin account exists.

@@ -13,6 +13,7 @@ Rails.application.routes.draw do
   get "www/index.html", to: redirect("/")
 
   root "posts#index"
+  get "rss", to: "posts#index", defaults: { format: :rss }, as: :rss_feed
   get "top", to: "posts#index", defaults: { tab: "top" }, as: :top_posts
   get "links", to: "posts#index", defaults: { tab: "links" }, as: :link_posts
   get "discussao", to: "posts#index", defaults: { tab: "discussao" }, as: :discussion_posts
@@ -24,8 +25,10 @@ Rails.application.routes.draw do
 
   resource :account, only: %i[edit update]
   resource :account_password, only: %i[edit update]
+  resources :api_tokens, only: %i[create destroy]
   resource :email_confirmation, only: %i[show create]
   resource :dashboard, only: :show, controller: :dashboard
+  resource :dashboard_digest, only: :update
   resources :notifications, only: %i[index update]
   resources :password_resets, only: %i[new create edit update], param: :token
   resource :session, only: %i[create]
@@ -48,5 +51,17 @@ Rails.application.routes.draw do
     end
     resources :moderation_cases, only: %i[index update]
     resources :tags, only: %i[index update destroy]
+  end
+
+  namespace :api, defaults: { format: :json } do
+    namespace :v1 do
+      resource :session, only: %i[show create destroy]
+      resources :notifications, only: %i[index update]
+      resources :tags, only: %i[index show]
+      resources :posts, only: %i[index show create update destroy] do
+        resource :vote, only: %i[create update destroy]
+        resources :comments, only: %i[create update destroy]
+      end
+    end
   end
 end

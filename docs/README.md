@@ -10,6 +10,7 @@ This folder documents the system as it exists today.
 - [http-routes.md](http-routes.md)
 - [local-development.md](local-development.md)
 - [deploy.md](deploy.md)
+- [api.md](api.md)
 - [roadmap.md](roadmap.md)
 - [brand.md](brand.md)
 
@@ -29,6 +30,7 @@ Implemented today:
 - comments
 - votes on posts
 - notifications inbox
+- JSON API v1 for session, feed, posts, comments, votes, tags and notifications
 - moderation reports
 - admin role management and moderation queue
 - feed filters: `Recentes`, `Top`, `Links`, `Discussao`

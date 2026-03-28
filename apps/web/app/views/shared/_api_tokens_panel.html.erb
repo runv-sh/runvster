@@ -1,0 +1,59 @@
+<article class="rv-panel rv-dashboard-panel <%= local_assigns[:panel_class] %>">
+  <p class="rv-section-eyebrow">API</p>
+  <h2 class="rv-card-title"><%= local_assigns.fetch(:title, "Tokens de acesso") %></h2>
+
+  <% if local_assigns[:description].present? %>
+    <p class="rv-meta"><%= local_assigns[:description] %></p>
+  <% end %>
+
+  <% if fresh_api_token.present? %>
+    <div class="rv-banner rv-banner--success">
+      <div>
+        <strong>Copie este token agora</strong>
+        <p class="rv-meta">Ele nao sera exibido novamente.</p>
+      </div>
+      <input class="rv-input rv-input--compact" value="<%= fresh_api_token %>" readonly>
+    </div>
+  <% end %>
+
+  <%= form_with url: api_tokens_path, scope: :api_token, class: "rv-form rv-form--inline" do |form| %>
+    <div class="rv-field">
+      <%= form.label :name, "Nome do token" %>
+      <%= form.text_field :name, placeholder: "CLI local, script, dashboard externa" %>
+    </div>
+
+    <div class="rv-field">
+      <%= form.label :expires_in_days, "Expira em dias" %>
+      <%= form.number_field :expires_in_days, min: 0, placeholder: "0 = sem expiracao" %>
+    </div>
+
+    <div class="rv-actions">
+      <%= form.submit "Criar token", class: "rv-button rv-button--primary" %>
+    </div>
+  <% end %>
+
+  <% if api_tokens.any? %>
+    <ul class="rv-dashboard-list">
+      <% api_tokens.each do |token| %>
+        <li>
+          <strong><%= token.name %></strong>
+          <span>
+            <%= token.active? ? "ativo" : "inativo" %> · ultimo uso:
+            <%= token.last_used_at.present? ? time_ago_in_words(token.last_used_at) + " atras" : "nunca" %>
+          </span>
+          <span>
+            criado em <%= l(token.created_at, format: :long) %>
+            <% if token.expires_at.present? %>
+              · expira em <%= l(token.expires_at, format: :long) %>
+            <% end %>
+          </span>
+          <% if token.active? %>
+            <%= button_to "Revogar", api_token_path(token), method: :delete, class: "rv-button rv-button--ghost rv-button--tiny" %>
+          <% end %>
+        </li>
+      <% end %>
+    </ul>
+  <% else %>
+    <p class="rv-meta">Nenhum token de API criado ainda.</p>
+  <% end %>
+</article>

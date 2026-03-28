@@ -1,14 +1,37 @@
 <p>Oi <strong>@<%= @user.username %></strong>,</p>
 
-<p>Segue seu resumo <%= @frequency == "weekly" ? "semanal" : "diario" %> do Runvster.</p>
+<p>
+  Aqui vai seu resumo <%= @frequency == "weekly" ? "semanal" : "diario" %> do Runvster.
+  Ele so chega quando existe algo novo para ver.
+</p>
 
-<ul>
-  <% @notifications.each do |notification| %>
-    <li><%= notification.message %></li>
-  <% end %>
-</ul>
+<% if @notifications.any? %>
+  <h2>Notificacoes novas</h2>
+  <ul>
+    <% @notifications.each do |notification| %>
+      <li><%= notification.message %></li>
+    <% end %>
+  </ul>
+<% end %>
+
+<% if @new_posts.any? %>
+  <h2>Novidades da comunidade</h2>
+  <ul>
+    <% @new_posts.each do |post| %>
+      <li>
+        <a href="<%= post_url(post) %>"><%= post.title %></a>
+        por @<%= post.user.username %>
+      </li>
+    <% end %>
+  </ul>
+<% end %>
 
 <p>
   Abra seu inbox:
   <a href="<%= notifications_url %>"><%= notifications_url %></a>
+</p>
+
+<p>
+  Ajuste ou desative esse resumo na sua dashboard:
+  <a href="<%= dashboard_url %>"><%= dashboard_url %></a>
 </p>

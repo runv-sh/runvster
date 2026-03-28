@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_03_28_014500) do
+ActiveRecord::Schema[8.1].define(version: 2026_03_28_023000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -24,6 +24,20 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_28_014500) do
     t.datetime "updated_at", null: false
     t.index ["admin_id"], name: "index_admin_actions_on_admin_id"
     t.index ["target_type", "target_id"], name: "index_admin_actions_on_target_type_and_target_id"
+  end
+
+  create_table "api_tokens", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.string "name", null: false
+    t.string "token_digest", null: false
+    t.datetime "last_used_at"
+    t.datetime "expires_at"
+    t.datetime "revoked_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["revoked_at"], name: "index_api_tokens_on_revoked_at"
+    t.index ["token_digest"], name: "index_api_tokens_on_token_digest", unique: true
+    t.index ["user_id"], name: "index_api_tokens_on_user_id"
   end
 
   create_table "comments", force: :cascade do |t|
@@ -318,6 +332,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_28_014500) do
   end
 
   add_foreign_key "admin_actions", "users", column: "admin_id"
+  add_foreign_key "api_tokens", "users"
   add_foreign_key "comments", "comments", column: "parent_id"
   add_foreign_key "comments", "posts"
   add_foreign_key "comments", "users"
@@ -341,3 +356,4 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_28_014500) do
   add_foreign_key "votes", "posts"
   add_foreign_key "votes", "users"
 end
+

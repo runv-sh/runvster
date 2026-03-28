@@ -1,5 +1,8 @@
 <% content_for :title, "Runvster Feed" %>
 <% content_for :body_class, "rv-body--feed" %>
+<% content_for :head do %>
+  <%= tag.link rel: "alternate", type: "application/rss+xml", title: "Runvster RSS", href: rss_feed_url(rss_feed_params_for(tab: @feed_tab)) %>
+<% end %>
 <% active_filters = [
   [ "Busca", @current_query ],
   [ "Tag", @current_tag ],
@@ -21,6 +24,7 @@
 
       <div class="rv-feed-bar__meta">
         <p class="rv-feed-count"><strong><%= @total_posts %></strong> itens no stream</p>
+        <%= link_to "RSS", rss_feed_path(rss_feed_params_for(tab: @feed_tab)), class: "rv-nav__link" %>
 
         <% if authenticated? %>
           <%= link_to "Publicar", new_post_path, class: "rv-nav__link rv-nav__link--accent" %>

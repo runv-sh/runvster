@@ -1,10 +1,24 @@
 Oi @<%= @user.username %>,
 
-Segue seu resumo <%= @frequency == "weekly" ? "semanal" : "diario" %> do Runvster.
+Aqui vai seu resumo <%= @frequency == "weekly" ? "semanal" : "diario" %> do Runvster.
+Ele so chega quando existe algo novo para ver.
 
+<% if @notifications.any? %>
+Notificacoes novas:
 <% @notifications.each do |notification| %>
 - <%= notification.message %>
 <% end %>
 
+<% end %>
+<% if @new_posts.any? %>
+Novidades da comunidade:
+<% @new_posts.each do |post| %>
+- <%= post.title %> — <%= post_url(post) %>
+<% end %>
+
+<% end %>
 Inbox:
 <%= notifications_url %>
+
+Dashboard para ajustar ou desativar o resumo:
+<%= dashboard_url %>

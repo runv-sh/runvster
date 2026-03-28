@@ -21,7 +21,9 @@ class UserMailer < ApplicationMailer
 
   def notification_digest_email
     @user = params[:user]
-    @notifications = params[:notifications]
+    @summary = params[:summary]
+    @notifications = @summary.notifications
+    @new_posts = @summary.new_posts
     @frequency = params[:frequency]
 
     mail(
