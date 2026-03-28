@@ -3,6 +3,10 @@
     <strong><%= link_to "@#{comment.user.username}", user_path(comment.user), class: "rv-inline-link" %></strong>
     <span>·</span>
     <span><%= time_ago_in_words(comment.created_at) %> atras</span>
+    <% if comment.edited_at.present? %>
+      <span>·</span>
+      <span>editado</span>
+    <% end %>
     <% if comment.replies_count.positive? %>
       <span>·</span>
       <span><%= pluralize(comment.replies_count, "resposta") %></span>
@@ -14,6 +18,13 @@
   </div>
 
   <% if authenticated? %>
+    <% if comment.editable_by?(current_user) %>
+      <div class="rv-actions">
+        <%= link_to "Editar", edit_post_comment_path(post, comment), class: "rv-button rv-button--secondary rv-button--tiny" %>
+        <%= button_to "Excluir", post_comment_path(post, comment), method: :delete, class: "rv-button rv-button--ghost rv-button--tiny", form: { data: { turbo_confirm: "Excluir este comentario?" } } %>
+      </div>
+    <% end %>
+
     <%= form_with model: [ post, Comment.new ], class: "rv-form rv-form--reply" do |form| %>
       <%= form.hidden_field :parent_id, value: comment.id %>
       <div class="rv-field">
@@ -24,7 +35,7 @@
       </div>
     <% end %>
 
-    <%= render "shared/moderation_form", reportable: comment %>
+    <%= render "shared/moderation_form", reportable: comment if current_user != comment.user %>
   <% end %>
 
   <% if comment.replies.any? %>

@@ -1,0 +1,26 @@
+<% content_for :title, "Editar Post | Runvster" %>
+
+<main class="rv-shell">
+  <%= render "shared/topbar" %>
+
+  <section class="rv-layout">
+    <div class="rv-column rv-column--main">
+      <article class="rv-panel">
+        <p class="rv-eyebrow">Autoria</p>
+        <h1 class="rv-section-title rv-section-title--page">Refine seu post.</h1>
+        <p class="rv-lead rv-lead--compact">
+          Atualize o enquadramento, ajuste tags e melhore a conversa sem depender do painel administrativo.
+        </p>
+
+        <%= render "form", post: @post %>
+      </article>
+    </div>
+
+    <aside class="rv-column rv-column--side">
+      <article class="rv-panel rv-panel--accent">
+        <p class="rv-eyebrow">Contexto</p>
+        <p class="rv-body-copy">Mudancas relevantes ficam registradas com timestamp de edicao.</p>
+      </article>
+    </aside>
+  </section>
+</main>

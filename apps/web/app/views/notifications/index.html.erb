@@ -20,6 +20,9 @@
             </li>
           <% end %>
         </ul>
+        <div class="rv-actions">
+          <%= link_to "Ajustar preferencias", edit_account_path, class: "rv-button rv-button--secondary rv-button--tiny" %>
+        </div>
       <% else %>
         <p class="rv-meta">Ainda nao ha notificacoes para esta conta.</p>
       <% end %>

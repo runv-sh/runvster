@@ -1,0 +1,30 @@
+<% content_for :title, "Definir Nova Senha | Runvster" %>
+
+<main class="rv-shell rv-shell--narrow">
+  <%= render "shared/topbar" %>
+
+  <section class="rv-auth">
+    <article class="rv-panel">
+      <p class="rv-eyebrow">Recuperacao</p>
+      <h1 class="rv-section-title rv-section-title--page">Escolha sua nova senha.</h1>
+
+      <%= render "shared/form_errors", record: @user %>
+
+      <%= form_with model: @user, url: password_reset_path(@user.password_reset_token), method: :patch, class: "rv-form" do |form| %>
+        <div class="rv-field">
+          <%= form.label :password, "Nova senha" %>
+          <%= form.password_field :password %>
+        </div>
+
+        <div class="rv-field">
+          <%= form.label :password_confirmation, "Confirmar nova senha" %>
+          <%= form.password_field :password_confirmation %>
+        </div>
+
+        <div class="rv-actions">
+          <%= form.submit "Salvar senha", class: "rv-button rv-button--primary" %>
+        </div>
+      <% end %>
+    </article>
+  </section>
+</main>

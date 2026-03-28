@@ -6,7 +6,14 @@ class DashboardController < ApplicationController
     @recent_invitations = invitations_scope.recent_first.limit(8)
     @pending_invitations_count = invitations_scope.pending.count
     @notifications = current_user.notifications.recent_first.limit(6)
-    @open_reports_count = current_user.admin? ? ModerationCase.open.count : current_user.reported_moderation_cases.open.count
+    @open_reports_count = current_user.staff? ? ModerationCase.open.count : current_user.reported_moderation_cases.open.count
+
+    if current_user.staff?
+      @moderation_cases = ModerationCase.recent_first.limit(6)
+      @recent_platform_posts = Post.visible.includes(:user, :tags).order(created_at: :desc).limit(8)
+      @hidden_posts_count = Post.where.not(hidden_at: nil).count
+      @hidden_comments_count = Comment.where.not(hidden_at: nil).count
+    end
 
     return unless current_user.admin?
 
@@ -16,8 +23,6 @@ class DashboardController < ApplicationController
     @comment_count = Comment.count
     @vote_count = Vote.count
     @latest_members = User.order(created_at: :desc).limit(8)
-    @recent_platform_posts = Post.recent_first.limit(8)
-    @moderation_cases = ModerationCase.recent_first.limit(6)
     @admin_actions = AdminAction.recent_first.limit(8)
     @tags = Tag.featured.limit(10)
   end

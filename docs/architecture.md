@@ -40,12 +40,11 @@ img/
 
 The project already ships with a dedicated `worker` service.
 
-Today there are no important product jobs yet, but the infrastructure is already in place for:
+Background work is still light today, but the infrastructure is already being used or prepared for:
 
-- notifications
-- moderation jobs
-- digests
-- cleanup tasks
+- invitation email delivery
+- recurring queue cleanup in production
+- future digests or moderation automation
 
 ## Current Domain Core
 
@@ -55,6 +54,12 @@ The current core tables are:
 - `posts`
 - `tags`
 - `taggings`
+- `comments`
+- `votes`
+- `notifications`
+- `moderation_cases`
+- `invitations`
+- `admin_actions`
 
 ## Design Direction
 
@@ -69,8 +74,7 @@ The interface currently favors:
 
 The next important product layers are:
 
-- comments
-- votes
-- moderation entities
-- tag pages
-- feed ranking backed by real activity
+- moderator/admin actions beyond triage
+- richer notification settings and digest delivery
+- production hardening and deploy automation
+- observability, backups and queue monitoring

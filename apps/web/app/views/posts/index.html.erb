@@ -1,10 +1,17 @@
 <% content_for :title, "Runvster Feed" %>
+<% content_for :body_class, "rv-body--feed" %>
+<% active_filters = [
+  [ "Busca", @current_query ],
+  [ "Tag", @current_tag ],
+  [ "Autor", @current_author ],
+  [ "Periodo", @current_period ]
+].select { |_, value| value.present? } %>
 
 <main class="rv-shell rv-shell--feed">
   <%= render "shared/topbar" %>
 
   <section class="rv-feed-page">
-    <div class="rv-feed-bar">
+    <div class="rv-feed-bar rv-feed-bar--dense">
       <nav class="rv-feed-tabs" aria-label="Feed filters">
         <%= link_to "Recentes", root_path, class: @feed_tab == "recentes" ? "rv-feed-tab rv-feed-tab--active" : "rv-feed-tab" %>
         <%= link_to "Top", top_posts_path, class: @feed_tab == "top" ? "rv-feed-tab rv-feed-tab--active" : "rv-feed-tab" %>
@@ -13,22 +20,59 @@
       </nav>
 
       <div class="rv-feed-bar__meta">
-        <p class="rv-feed-count">
-          <strong><%= @posts.size %></strong>
-          <%= @posts.size == 1 ? "post" : "posts" %>
-        </p>
+        <p class="rv-feed-count"><strong><%= @total_posts %></strong> itens no stream</p>
 
         <% if authenticated? %>
-          <%= link_to "Novo post", new_post_path, class: "rv-nav__link rv-nav__link--accent" %>
+          <%= link_to "Publicar", new_post_path, class: "rv-nav__link rv-nav__link--accent" %>
         <% end %>
       </div>
     </div>
+
+    <details class="rv-feed-filters" <%= "open" if active_filters.any? %>>
+      <summary class="rv-feed-filters__summary">
+        <span>Busca e filtros</span>
+        <span class="rv-feed-filters__status"><%= active_filters.any? ? "#{active_filters.count} ativos" : "fechado" %></span>
+      </summary>
+
+      <article class="rv-panel rv-panel--dense rv-panel--filters">
+        <%= form_with url: request.path, method: :get, class: "rv-filter-form" do |form| %>
+          <div class="rv-field">
+            <%= form.label :q, "Buscar" %>
+            <%= form.text_field :q, value: @current_query, placeholder: "titulo, tag, contexto ou autor" %>
+          </div>
+          <div class="rv-field">
+            <%= form.label :tag, "Tag" %>
+            <%= form.text_field :tag, value: @current_tag, placeholder: "infra" %>
+          </div>
+          <div class="rv-field">
+            <%= form.label :author, "Autor" %>
+            <%= form.text_field :author, value: @current_author, placeholder: "member_one" %>
+          </div>
+          <div class="rv-field">
+            <%= form.label :period, "Periodo" %>
+            <%= form.select :period, [["Qualquer periodo", ""], ["24h", "24h"], ["7 dias", "7d"], ["30 dias", "30d"]], { selected: @current_period }, class: "rv-input" %>
+          </div>
+          <div class="rv-actions">
+            <%= form.submit "Aplicar filtros", class: "rv-button rv-button--primary rv-button--tiny" %>
+            <%= link_to "Limpar", request.path, class: "rv-button rv-button--ghost rv-button--tiny" %>
+          </div>
+        <% end %>
+      </article>
+    </details>
+
+    <% if active_filters.any? %>
+      <div class="rv-feed-active-filters">
+        <% active_filters.each do |label, value| %>
+          <span class="rv-feed-active-filter"><strong><%= label %>:</strong> <%= value %></span>
+        <% end %>
+      </div>
+    <% end %>
 
     <section class="rv-feed-stream rv-feed-stream--flat">
       <% if @posts.any? %>
         <ol class="rv-feed-list">
           <% @posts.each_with_index do |post, index| %>
-            <%= render "post_card", post: post, index: index %>
+            <%= render "post_card", post: post, index: ((@page - 1) * PostsController::PAGE_SIZE) + index %>
           <% end %>
         </ol>
       <% else %>
@@ -44,5 +88,17 @@
         </article>
       <% end %>
     </section>
+
+    <% if @has_previous_page || @has_next_page %>
+      <div class="rv-page-nav">
+        <% if @has_previous_page %>
+          <%= link_to "Pagina anterior", feed_params_for(page: @page - 1), class: "rv-button rv-button--secondary rv-button--tiny" %>
+        <% end %>
+        <span class="rv-meta">Pagina <strong><%= @page %></strong></span>
+        <% if @has_next_page %>
+          <%= link_to "Proxima pagina", feed_params_for(page: @page + 1), class: "rv-button rv-button--secondary rv-button--tiny" %>
+        <% end %>
+      </div>
+    <% end %>
   </section>
 </main>

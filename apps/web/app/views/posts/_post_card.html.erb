@@ -1,6 +1,5 @@
 <li class="rv-feed-item">
-  <div class="rv-feed-item__rank rv-feed-item__rank--engagement">
-    <span><%= index + 1 %>.</span>
+  <div class="rv-feed-item__rank rv-feed-item__rank--engagement" aria-label="Pontuacao do post">
     <%= render "shared/vote_controls", post: post %>
   </div>
 
@@ -10,29 +9,26 @@
         <%= link_to post.title, post_path(post) %>
       </h2>
 
-      <% if post.link_post? && post.display_host.present? %>
-        <span class="rv-feed-item__host"><%= post.display_host %></span>
-      <% end %>
-    </div>
-
-    <p class="rv-feed-item__meta">
-      <span class="rv-feed-item__type"><%= post.link_post? ? "link" : "texto" %></span>
-      <span>por <%= link_to "@#{post.user.username}", user_path(post.user), class: "rv-inline-link" %></span>
-      <span>•</span>
-      <span><%= time_ago_in_words(post.created_at) %> atras</span>
-      <span>•</span>
-      <span><%= pluralize(post.comments_count, "comentario") %></span>
-      <span>•</span>
-      <span><%= pluralize(post.score, "ponto") %></span>
       <% if post.tags.any? %>
-        <span>•</span>
         <span class="rv-feed-item__tags-inline">
           <% post.tags.each do |tag| %>
             <%= link_to tag.name, tag_path(tag), class: "rv-feed-item__tag" %>
           <% end %>
         </span>
       <% end %>
-      <span>•</span>
+
+      <% if post.link_post? && post.display_host.present? %>
+        <em class="rv-feed-item__host"><%= post.display_host %></em>
+      <% end %>
+    </div>
+
+    <p class="rv-feed-item__meta">
+      <span><%= post.link_post? ? "via" : "por" %> <%= link_to "@#{post.user.username}", user_path(post.user), class: "rv-inline-link" %></span>
+      <span>|</span>
+      <span><%= time_ago_in_words(post.created_at) %> atras</span>
+      <span>|</span>
+      <span><%= pluralize(post.comments_count, "comentario") %></span>
+      <span>|</span>
       <%= link_to "abrir", post_path(post), class: "rv-inline-link" %>
     </p>
 
@@ -40,4 +36,10 @@
       <p class="rv-feed-item__summary"><%= truncate(post.body, length: 180) %></p>
     <% end %>
   </div>
+
+  <% if post.thumbnail? %>
+    <%= link_to post_path(post), class: "rv-feed-item__thumbnail-wrap", aria: { label: "Abrir #{post.title}" } do %>
+      <%= image_tag post.thumbnail_url, alt: "Thumbnail do link compartilhado", class: "rv-feed-item__thumbnail", loading: "lazy", referrerpolicy: "no-referrer" %>
+    <% end %>
+  <% end %>
 </li>

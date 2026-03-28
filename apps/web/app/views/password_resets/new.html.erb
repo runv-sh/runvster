@@ -1,0 +1,27 @@
+<% content_for :title, "Recuperar Senha | Runvster" %>
+
+<main class="rv-shell rv-shell--narrow">
+  <%= render "shared/topbar" %>
+
+  <section class="rv-auth">
+    <article class="rv-panel">
+      <p class="rv-eyebrow">Recuperacao</p>
+      <h1 class="rv-section-title rv-section-title--page">Redefina sua senha por email.</h1>
+      <p class="rv-lead rv-lead--compact">
+        Enviaremos um link temporario para o email informado, se ele existir no sistema.
+      </p>
+
+      <%= form_with scope: :password_reset, url: password_resets_path, class: "rv-form" do |form| %>
+        <div class="rv-field">
+          <%= form.label :email, "Email" %>
+          <%= form.email_field :email, autofocus: true, placeholder: "voce@runv.club" %>
+        </div>
+
+        <div class="rv-actions">
+          <%= form.submit "Enviar link", class: "rv-button rv-button--primary" %>
+          <%= link_to "Voltar ao login", sign_in_path, class: "rv-button rv-button--secondary" %>
+        </div>
+      <% end %>
+    </article>
+  </section>
+</main>

@@ -22,23 +22,30 @@ Rails.application.routes.draw do
   get "sign-in", to: redirect("/login")
   delete "sign-out", to: "sessions#destroy", as: :sign_out
 
-  resource :dashboard, only: :show
+  resource :account, only: %i[edit update]
+  resource :account_password, only: %i[edit update]
+  resource :email_confirmation, only: %i[show create]
+  resource :dashboard, only: :show, controller: :dashboard
   resources :notifications, only: %i[index update]
+  resources :password_resets, only: %i[new create edit update], param: :token
   resource :session, only: %i[create]
   resources :invitations, only: %i[create]
   resources :moderation_cases, only: %i[create]
   resources :tags, only: :show
   resources :users, path: "u", param: :username, only: %i[new create show]
-  resources :posts, only: %i[index show new create] do
+  resources :posts, only: %i[index show new create edit update destroy] do
     resource :vote, only: %i[create update destroy]
-    resources :comments, only: :create
+    resources :comments, only: %i[create edit update destroy]
   end
 
   namespace :admin do
+    resource :community_settings, only: :update
     resources :users, only: %i[index update destroy]
     resources :posts, only: %i[index update destroy]
     resources :comments, only: %i[index update destroy]
-    resources :invitations, only: %i[index update destroy]
+    resources :invitations, only: %i[index update destroy] do
+      patch :bulk_update, on: :collection
+    end
     resources :moderation_cases, only: %i[index update]
     resources :tags, only: %i[index update destroy]
   end

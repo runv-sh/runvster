@@ -6,7 +6,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="application-name" content="Runvster">
     <meta name="mobile-web-app-capable" content="yes">
-    <meta name="theme-color" content="#f01010">
+    <meta name="theme-color" content="#090909">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
 
@@ -23,7 +23,7 @@
     <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
   </head>
 
-  <body class="rv-body">
+  <body class="<%= ["rv-body", content_for(:body_class).presence].compact.join(" ") %>">
     <%= render "shared/flash" %>
     <%= yield %>
   </body>

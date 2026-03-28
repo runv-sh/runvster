@@ -5,7 +5,7 @@
 
   <section class="rv-stack">
     <article class="rv-panel">
-      <p class="rv-section-eyebrow">Admin</p>
+      <p class="rv-section-eyebrow"><%= current_user.admin? ? "Admin" : "Moderacao" %></p>
       <h1 class="rv-section-title rv-section-title--page">Fila de moderacao</h1>
 
       <% if @moderation_cases.any? %>
@@ -15,17 +15,36 @@
               <div>
                 <strong><%= moderation_case.reason %></strong>
                 <p class="rv-meta">
-                  Reportado por @<%= moderation_case.reporter.username %> · alvo: <%= moderation_case.reportable_type %> #<%= moderation_case.reportable_id %> · status atual: <%= moderation_case.status %>
+                  Reportado por @<%= moderation_case.reporter.username %> · alvo:
+                  <%= moderation_case.reportable_type %> #<%= moderation_case.reportable_id %> · status atual: <%= moderation_case.status %>
                 </p>
                 <% if moderation_case.details.present? %>
                   <p class="rv-meta"><%= moderation_case.details %></p>
                 <% end %>
               </div>
 
-              <%= form_with model: [ :admin, moderation_case ], class: "rv-inline-form" do |form| %>
-                <%= form.select :status, ModerationCase.statuses.keys.map { |status| [ status.humanize, status ] }, {}, class: "rv-input" %>
-                <%= form.text_field :resolution_note, placeholder: "Nota de resolucao", class: "rv-input" %>
-                <%= form.submit "Aplicar decisao", class: "rv-button rv-button--primary rv-button--tiny" %>
+              <%= form_with model: [ :admin, moderation_case ], class: "rv-form" do |form| %>
+                <div class="rv-field">
+                  <%= form.label :status, "Novo status" %>
+                  <%= form.select :status, ModerationCase.statuses.keys.map { |status| [ status.humanize, status ] }, {}, class: "rv-input" %>
+                </div>
+                <div class="rv-field">
+                  <%= label_tag "moderation_case_#{moderation_case.id}_moderation_action", "Acao sobre o alvo" %>
+                  <%= select_tag "moderation_case[moderation_action]", options_for_select(moderation_action_options_for(moderation_case.reportable)), id: "moderation_case_#{moderation_case.id}_moderation_action", class: "rv-input" %>
+                </div>
+                <% if moderation_case.reportable.is_a?(User) %>
+                  <div class="rv-field">
+                    <%= label_tag "moderation_case_#{moderation_case.id}_suspension_hours", "Horas de suspensao" %>
+                    <%= number_field_tag "moderation_case[suspension_hours]", 24, min: 0, id: "moderation_case_#{moderation_case.id}_suspension_hours", class: "rv-input" %>
+                  </div>
+                <% end %>
+                <div class="rv-field">
+                  <%= form.label :resolution_note, "Nota de resolucao" %>
+                  <%= form.text_field :resolution_note, placeholder: "Contexto da decisao" %>
+                </div>
+                <div class="rv-actions">
+                  <%= form.submit "Aplicar decisao", class: "rv-button rv-button--primary rv-button--tiny" %>
+                </div>
               <% end %>
             </div>
           <% end %>

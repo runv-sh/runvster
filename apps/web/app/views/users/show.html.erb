@@ -9,6 +9,11 @@
         <p class="rv-section-eyebrow">Profile</p>
         <h1 class="rv-section-title rv-section-title--page">@<%= @user.username %></h1>
         <p class="rv-lead rv-lead--compact"><%= @user.bio.presence || "Pessoa builder ainda sem bio publicada." %></p>
+        <% if authenticated? && current_user == @user %>
+          <div class="rv-actions">
+            <%= link_to "Editar conta", edit_account_path, class: "rv-button rv-button--secondary rv-button--tiny" %>
+          </div>
+        <% end %>
         <% if authenticated? && current_user != @user %>
           <%= render "shared/moderation_form", reportable: @user %>
         <% end %>
@@ -39,6 +44,7 @@
       <article class="rv-panel">
         <p class="rv-section-eyebrow">Stats</p>
         <p class="rv-meta"><%= pluralize(@user.posts_count, "post") %> publicados ate agora.</p>
+        <p class="rv-meta"><%= @user.email_verified? ? "email confirmado" : "email pendente" %></p>
       </article>
     </aside>
   </section>

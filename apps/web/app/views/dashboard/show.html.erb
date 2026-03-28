@@ -10,8 +10,7 @@
           <p class="rv-dashboard-eyebrow">Admin Control</p>
           <h1 class="rv-dashboard-title">Painel de operacao da comunidade.</h1>
           <p class="rv-dashboard-copy">
-            Voce e o primeiro usuario da plataforma, com convites ilimitados e visibilidade completa sobre entrada,
-            crescimento, moderacao e atividade recente.
+            Voce opera entrada, convites, moderacao, atividade recente e politicas da comunidade a partir daqui.
           </p>
         </div>
 
@@ -36,12 +35,12 @@
           <strong><%= @comment_count %></strong>
         </article>
         <article class="rv-stat-card">
-          <span class="rv-stat-card__label">Convites pendentes</span>
-          <strong><%= @pending_invitations_count %></strong>
+          <span class="rv-stat-card__label">Posts ocultos</span>
+          <strong><%= @hidden_posts_count %></strong>
         </article>
         <article class="rv-stat-card">
-          <span class="rv-stat-card__label">Votos</span>
-          <strong><%= @vote_count %></strong>
+          <span class="rv-stat-card__label">Comentarios ocultos</span>
+          <strong><%= @hidden_comments_count %></strong>
         </article>
       </section>
 
@@ -49,7 +48,7 @@
         <article class="rv-panel rv-dashboard-panel rv-dashboard-panel--admin-accent">
           <p class="rv-section-eyebrow">Convidar</p>
           <h2 class="rv-card-title">Abrir novas vagas</h2>
-          <p class="rv-meta">O admin pode enviar convites sem limite para formar o nucleo inicial da comunidade.</p>
+          <p class="rv-meta">O admin pode enviar convites sem limite e ajustar as politicas no painel de convites.</p>
 
           <%= form_with model: Invitation.new, url: invitations_path, class: "rv-form rv-form--inline" do |form| %>
             <div class="rv-field">
@@ -72,7 +71,7 @@
               <% @latest_members.each do |user| %>
                 <li>
                   <strong><%= link_to "@#{user.username}", user_path(user), class: "rv-inline-link" %></strong>
-                  <span><%= user.role %> · <%= time_ago_in_words(user.created_at) %> atras</span>
+                  <span><%= user.role %> · <%= user.account_state %> · <%= time_ago_in_words(user.created_at) %> atras</span>
                 </li>
               <% end %>
             </ul>
@@ -100,6 +99,9 @@
                 </li>
               <% end %>
             </ul>
+            <div class="rv-actions">
+              <%= link_to "Abrir painel de convites", admin_invitations_path, class: "rv-button rv-button--secondary rv-button--tiny" %>
+            </div>
           <% else %>
             <p class="rv-meta">Nenhum convite emitido ate agora.</p>
           <% end %>
@@ -135,7 +137,7 @@
               <% @recent_platform_posts.each do |post| %>
                 <li>
                   <strong><%= link_to post.title, post_path(post), class: "rv-inline-link" %></strong>
-                  <span>por @<%= post.user.username %></span>
+                  <span>por @<%= post.user.username %> · score <%= post.score %></span>
                 </li>
               <% end %>
             </ul>
@@ -175,10 +177,10 @@
     <section class="rv-dashboard rv-dashboard--member">
       <article class="rv-dashboard-hero rv-dashboard-hero--member">
         <div>
-          <p class="rv-dashboard-eyebrow">Member Space</p>
-          <h1 class="rv-dashboard-title">Seu cockpit de participacao.</h1>
+          <p class="rv-dashboard-eyebrow"><%= current_user.staff? ? "Moderator Space" : "Member Space" %></p>
+          <h1 class="rv-dashboard-title"><%= current_user.staff? ? "Seu painel de moderacao e participacao." : "Seu cockpit de participacao." %></h1>
           <p class="rv-dashboard-copy">
-            Aqui voce acompanha seus posts, sua trilha de acesso, seu inbox e quando sua cota de convites sera destravada.
+            Aqui voce acompanha seus posts, convites, inbox, confirmacao de email e o estado atual da sua participacao na comunidade.
           </p>
         </div>
 
@@ -190,6 +192,23 @@
           <% end %>
         </div>
       </article>
+
+      <div class="rv-banner <%= current_user.email_verified? ? "rv-banner--success" : "rv-banner--warning" %>">
+        <div>
+          <strong><%= current_user.email_verified? ? "Email confirmado" : "Email pendente de confirmacao" %></strong>
+          <p class="rv-meta">
+            <% if current_user.email_verified? %>
+              Seu email esta pronto para resumos, recuperacao de senha e fluxos de convite.
+            <% else %>
+              Confirme seu email para fortalecer a conta e destravar fluxos por email.
+            <% end %>
+          </p>
+        </div>
+
+        <% unless current_user.email_verified? %>
+          <%= button_to "Reenviar confirmacao", email_confirmation_path, method: :post, class: "rv-button rv-button--secondary rv-button--tiny" %>
+        <% end %>
+      </div>
 
       <section class="rv-dashboard-stats">
         <article class="rv-stat-card">
@@ -215,13 +234,28 @@
       </section>
 
       <section class="rv-dashboard-grid">
+        <% if current_user.staff? %>
+          <article class="rv-panel rv-dashboard-panel rv-panel--attention">
+            <p class="rv-section-eyebrow">Moderacao</p>
+            <h2 class="rv-card-title">Ferramentas de staff ativas</h2>
+            <p class="rv-meta">
+              Ha <strong><%= ModerationCase.open.count %></strong> casos abertos, <strong><%= @hidden_posts_count %></strong> posts ocultos
+              e <strong><%= @hidden_comments_count %></strong> comentarios ocultos.
+            </p>
+            <div class="rv-actions">
+              <%= link_to "Abrir fila de moderacao", admin_moderation_cases_path, class: "rv-button rv-button--primary rv-button--tiny" %>
+              <%= link_to "Revisar usuarios", admin_users_path, class: "rv-button rv-button--secondary rv-button--tiny" %>
+            </div>
+          </article>
+        <% end %>
+
         <article class="rv-panel rv-dashboard-panel rv-dashboard-panel--member-accent">
           <p class="rv-section-eyebrow">Convites</p>
           <h2 class="rv-card-title">Traga gente boa quando seu acesso amadurecer.</h2>
 
           <% if current_user.can_send_invite? %>
             <p class="rv-meta">
-              Sua cota total e de <strong><%= User::STANDARD_INVITE_LIMIT %> convites</strong>.
+              Sua cota total e de <strong><%= current_user.invite_limit %> convites</strong>.
               Restam <strong><%= current_user.available_invites_count %></strong>.
             </p>
 
@@ -237,12 +271,11 @@
             <% end %>
           <% elsif current_user.invite_eligible? %>
             <p class="rv-meta">
-              Sua cota de convites ja foi totalmente usada. Quando precisarmos abrir uma nova leva, o admin pode
-              ajustar essa politica.
+              Sua cota de convites ja foi totalmente usada. O admin pode ajustar essa politica quando abrir uma nova leva.
             </p>
           <% else %>
             <p class="rv-meta">
-              Seus convites liberam depois de um mes de uso.
+              Seus convites liberam depois de <strong><%= CommunitySetting.current.member_invite_unlock_days %> dias de uso</strong>.
               Abertura prevista: <strong><%= l(current_user.invite_unlocks_at, format: :long) %></strong>.
             </p>
           <% end %>

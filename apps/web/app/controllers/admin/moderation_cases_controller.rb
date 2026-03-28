@@ -1,17 +1,19 @@
 module Admin
   class ModerationCasesController < ApplicationController
-    before_action :require_admin!
+    before_action :require_staff!
 
     def index
-      @moderation_cases = ModerationCase.includes(:reporter, :resolver).recent_first
+      @moderation_cases = ModerationCase.includes(:reporter, :resolver, :reportable).recent_first
     end
 
     def update
       moderation_case = ModerationCase.find(params[:id])
-      moderation_case.resolve!(
-        admin: current_user,
+      moderation_case.resolve_with_action!(
+        staff: current_user,
         status: resolution_params[:status],
-        resolution_note: resolution_params[:resolution_note]
+        resolution_note: resolution_params[:resolution_note],
+        moderation_action: resolution_params[:moderation_action],
+        suspension_hours: resolution_params[:suspension_hours]
       )
       AdminAction.create!(
         admin: current_user,
@@ -30,7 +32,7 @@ module Admin
     private
 
     def resolution_params
-      params.expect(moderation_case: [ :status, :resolution_note ])
+      params.expect(moderation_case: [ :status, :resolution_note, :moderation_action, :suspension_hours ])
     end
   end
 end

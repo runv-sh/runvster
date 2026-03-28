@@ -1,4 +1,23 @@
 <% content_for :title, "#{@post.title} | Runvster" %>
+<% content_for :head do %>
+  <% social_image_url = social_image_url_for(@post) %>
+  <% social_description = social_description_for(@post) %>
+  <%= tag.meta name: "description", content: social_description %>
+  <%= tag.meta property: "og:site_name", content: "Runvster" %>
+  <%= tag.meta property: "og:type", content: "article" %>
+  <%= tag.meta property: "og:title", content: @post.title %>
+  <%= tag.meta property: "og:description", content: social_description %>
+  <%= tag.meta property: "og:url", content: post_url(@post) %>
+  <%= tag.meta name: "twitter:title", content: @post.title %>
+  <%= tag.meta name: "twitter:description", content: social_description %>
+  <% if social_image_url.present? %>
+    <%= tag.meta property: "og:image", content: social_image_url %>
+    <%= tag.meta name: "twitter:card", content: "summary_large_image" %>
+    <%= tag.meta name: "twitter:image", content: social_image_url %>
+  <% else %>
+    <%= tag.meta name: "twitter:card", content: "summary" %>
+  <% end %>
+<% end %>
 
 <main class="rv-shell">
   <%= render "shared/topbar" %>
@@ -6,6 +25,13 @@
   <section class="rv-layout">
     <div class="rv-column rv-column--main">
       <article class="rv-panel rv-post-detail">
+        <% if @post.hidden? && staff_member? %>
+          <div class="rv-banner rv-banner--warning">
+            <strong>Post ocultado</strong>
+            <p class="rv-meta"><%= @post.hidden_reason.presence || "Ocultado pela moderacao." %></p>
+          </div>
+        <% end %>
+
         <div class="rv-pill-row rv-pill-row--spaced">
           <% @post.tags.each do |tag| %>
             <%= link_to tag.name, tag_path(tag), class: "rv-pill" %>
@@ -18,11 +44,25 @@
           publicado por <%= link_to "@#{@post.user.username}", user_path(@post.user), class: "rv-inline-link" %>
           <span>·</span>
           <%= l(@post.created_at, format: :long) %>
+          <% if @post.edited_at.present? %>
+            <span>·</span>
+            editado em <%= l(@post.edited_at, format: :long) %>
+          <% end %>
         </p>
 
         <% if @post.body.present? %>
           <div class="rv-prose">
             <%= simple_format(@post.body) %>
+          </div>
+        <% end %>
+
+        <% if @post.thumbnail? %>
+          <div class="rv-link-preview">
+            <%= image_tag @post.thumbnail_url, alt: "Thumbnail do link compartilhado", class: "rv-link-preview__image", loading: "lazy", referrerpolicy: "no-referrer" %>
+            <div class="rv-link-preview__content">
+              <p class="rv-link-preview__eyebrow">Preview do link</p>
+              <p class="rv-link-preview__host"><%= @post.display_host.presence || "link externo" %></p>
+            </div>
           </div>
         <% end %>
 
@@ -39,7 +79,11 @@
 
         <% if authenticated? %>
           <div class="rv-post-detail__actions">
-            <%= render "shared/moderation_form", reportable: @post %>
+            <% if @post.editable_by?(current_user) %>
+              <%= link_to "Editar post", edit_post_path(@post), class: "rv-button rv-button--secondary rv-button--tiny" %>
+              <%= button_to "Excluir post", post_path(@post), method: :delete, class: "rv-button rv-button--ghost rv-button--tiny", form: { data: { turbo_confirm: "Excluir este post?" } } %>
+            <% end %>
+            <%= render "shared/moderation_form", reportable: @post if current_user != @post.user %>
           </div>
         <% end %>
       </article>
@@ -82,6 +126,7 @@
         <p class="rv-section-eyebrow">Autor</p>
         <h2 class="rv-card-title">@<%= @post.user.username %></h2>
         <p class="rv-meta"><%= @post.user.bio.presence || "Ainda sem bio publicada." %></p>
+        <p class="rv-meta"><%= @post.user.email_verified? ? "email confirmado" : "email ainda nao confirmado" %></p>
       </article>
 
       <article class="rv-panel">

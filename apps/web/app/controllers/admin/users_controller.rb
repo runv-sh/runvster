@@ -1,6 +1,7 @@
 module Admin
   class UsersController < ApplicationController
-    before_action :require_admin!
+    before_action :require_staff!
+    before_action :require_admin!, only: :destroy
 
     def index
       @users = User.order(created_at: :desc)
@@ -9,19 +10,25 @@ module Admin
     def update
       user = User.find(params[:id])
       previous_role = user.role
+      previous_state = user.account_state
       next_role = user_params[:role].to_s
 
-      if previous_role == "admin" && next_role != "admin" && User.admin.count == 1
+      if current_user.moderator? && user.admin?
+        return redirect_to admin_users_path, alert: "Moderadores nao podem alterar contas administrativas."
+      end
+
+      if current_user.admin? && previous_role == "admin" && next_role.present? && next_role != "admin" && User.admin.count == 1
         return redirect_to admin_users_path, alert: "Nao e possivel remover o ultimo administrador da plataforma."
       end
 
       if user.update(user_params)
+        Notification.notify_account_state_changed!(user, actor: current_user) if user.saved_change_to_account_state?
         AdminAction.create!(
           admin: current_user,
-          action_type: "user_role_updated",
+          action_type: "user_updated",
           target_type: "User",
           target_id: user.id,
-          details: "Usuario editado. Role alterada de #{previous_role} para #{user.role}."
+          details: "Usuario editado. Role: #{previous_role} -> #{user.role}. Estado: #{previous_state} -> #{user.account_state}."
         )
         redirect_to admin_users_path, notice: "Permissao de @#{user.username} atualizada."
       else
@@ -56,7 +63,11 @@ module Admin
     private
 
     def user_params
-      params.expect(user: [ :username, :email, :bio, :role ])
+      if current_user.admin?
+        params.expect(user: [ :username, :email, :bio, :role, :account_state, :moderation_note, :suspended_until ])
+      else
+        params.expect(user: [ :account_state, :moderation_note, :suspended_until ])
+      end
     end
   end
 end

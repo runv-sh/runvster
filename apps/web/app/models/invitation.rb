@@ -10,6 +10,7 @@ class Invitation < ApplicationRecord
   validate :inviter_can_send_invites
   validate :recipient_email_has_no_pending_invitation, on: :create
   validate :recipient_email_has_no_existing_account, on: :create
+  validate :respect_invitation_rate_limit, on: :create
 
   scope :pending, lambda {
     where(accepted_at: nil, revoked_at: nil)
@@ -40,6 +41,14 @@ class Invitation < ApplicationRecord
     !accepted? && !expired? && !revoked?
   end
 
+  def resendable?
+    pending?
+  end
+
+  def remindable?
+    pending? && (reminder_sent_at.blank? || reminder_sent_at <= 12.hours.ago)
+  end
+
   def mark_as_accepted!(user)
     update!(invitee: user, accepted_at: Time.current, acceptance_note: "Conta criada via convite.")
     Notification.notify_invitation_accepted!(self)
@@ -47,6 +56,22 @@ class Invitation < ApplicationRecord
 
   def revoke!(note: nil)
     update!(revoked_at: Time.current, acceptance_note: note.presence || acceptance_note)
+  end
+
+  def deliver_invite_email!(reminder: false)
+    touch_attributes = {
+      sent_count: sent_count + 1,
+      last_sent_at: Time.current
+    }
+    touch_attributes[:reminder_sent_at] = Time.current if reminder
+    update!(touch_attributes)
+
+    mailer = InvitationMailer.with(invitation: self)
+    (reminder ? mailer.reminder_email : mailer.invite_email).deliver_later
+  end
+
+  def extend_expiration!
+    update!(expires_at: CommunitySetting.current.invite_expiration_days.days.from_now)
   end
 
   private
@@ -60,7 +85,7 @@ class Invitation < ApplicationRecord
   end
 
   def set_default_expiration
-    self.expires_at ||= 14.days.from_now
+    self.expires_at ||= CommunitySetting.current.invite_expiration_days.days.from_now
   end
 
   def inviter_can_send_invites
@@ -80,5 +105,12 @@ class Invitation < ApplicationRecord
     return unless User.exists?(email: recipient_email)
 
     errors.add(:recipient_email, "ja esta associado a uma conta existente.")
+  end
+
+  def respect_invitation_rate_limit
+    return if inviter.blank? || inviter.admin?
+    return unless inviter.sent_invitations.where("created_at >= ?", 1.day.ago).count >= inviter.invite_limit
+
+    errors.add(:base, "A cota atual de convites para este periodo ja foi utilizada.")
   end
 end

@@ -9,6 +9,7 @@
   <div class="rv-field">
     <%= form.label :url, "Link externo" %>
     <%= form.url_field :url, placeholder: "https://..." %>
+    <p class="rv-meta">Quando o destino expuser Open Graph ou twitter cards, o Runvster tenta puxar a thumbnail automaticamente.</p>
   </div>
 
   <div class="rv-field">
@@ -23,7 +24,7 @@
   </div>
 
   <div class="rv-actions">
-    <%= form.submit "Publicar post", class: "rv-button rv-button--primary" %>
+    <%= form.submit post.persisted? ? "Salvar post" : "Publicar post", class: "rv-button rv-button--primary" %>
     <%= link_to "Voltar ao feed", root_path, class: "rv-button rv-button--secondary" %>
   </div>
 <% end %>

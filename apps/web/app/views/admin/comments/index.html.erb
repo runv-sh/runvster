@@ -1,11 +1,11 @@
-<% content_for :title, "Admin Comments | Runvster" %>
+<% content_for :title, "Comments | Runvster" %>
 
 <main class="rv-shell">
   <%= render "shared/topbar" %>
 
   <section class="rv-stack">
     <article class="rv-panel">
-      <p class="rv-section-eyebrow">Admin</p>
+      <p class="rv-section-eyebrow"><%= current_user.admin? ? "Admin" : "Moderacao" %></p>
       <h1 class="rv-section-title rv-section-title--page">Gestao de comentarios</h1>
 
       <div class="rv-admin-table">
@@ -13,7 +13,12 @@
           <div class="rv-admin-table__row rv-admin-table__row--stacked">
             <div>
               <strong>Comentario #<%= comment.id %></strong>
-              <p class="rv-meta">por @<%= comment.user.username %> no post <%= link_to comment.post.title, post_path(comment.post), class: "rv-inline-link" %></p>
+              <p class="rv-meta">
+                por @<%= comment.user.username %> no post <%= link_to comment.post.title, post_path(comment.post), class: "rv-inline-link" %> · <%= comment.hidden? ? "oculto" : "visivel" %>
+              </p>
+              <% if comment.hidden? %>
+                <p class="rv-meta">Ocultado por @<%= comment.hidden_by&.username %> · <%= comment.hidden_reason %></p>
+              <% end %>
             </div>
 
             <%= form_with model: [ :admin, comment ], class: "rv-form" do |form| %>
@@ -21,14 +26,24 @@
                 <%= form.label :body, "Texto" %>
                 <%= form.text_area :body, rows: 4 %>
               </div>
+              <div class="rv-field">
+                <%= label_tag "comment_#{comment.id}_moderation_action", "Acao de moderacao" %>
+                <%= select_tag "comment[moderation_action]", options_for_select([["Sem acao", ""], ["Ocultar comentario", "hide"], ["Restaurar comentario", "restore"]]), id: "comment_#{comment.id}_moderation_action", class: "rv-input" %>
+              </div>
+              <div class="rv-field">
+                <%= label_tag "comment_#{comment.id}_moderation_note", "Nota de moderacao" %>
+                <%= text_field_tag "comment[moderation_note]", nil, id: "comment_#{comment.id}_moderation_note", class: "rv-input", placeholder: "Motivo da acao" %>
+              </div>
               <div class="rv-actions">
                 <%= form.submit "Salvar comentario", class: "rv-button rv-button--primary rv-button--tiny" %>
               </div>
             <% end %>
 
-            <div class="rv-actions">
-              <%= button_to "Excluir comentario", admin_comment_path(comment), method: :delete, class: "rv-button rv-button--ghost rv-button--tiny", form: { data: { turbo_confirm: "Excluir este comentario?" } } %>
-            </div>
+            <% if current_user.admin? %>
+              <div class="rv-actions">
+                <%= button_to "Excluir comentario", admin_comment_path(comment), method: :delete, class: "rv-button rv-button--ghost rv-button--tiny", form: { data: { turbo_confirm: "Excluir este comentario?" } } %>
+              </div>
+            <% end %>
           </div>
         <% end %>
       </div>

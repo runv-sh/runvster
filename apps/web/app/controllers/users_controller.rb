@@ -18,6 +18,8 @@ class UsersController < ApplicationController
 
     if @user.save
       @invitation&.mark_as_accepted!(@user)
+      token = @user.generate_email_confirmation_token!
+      UserMailer.with(user: @user, token: token).email_confirmation_email.deliver_later
       start_session_for(@user)
       redirect_to dashboard_path, notice: "Conta criada. Bora publicar."
     else

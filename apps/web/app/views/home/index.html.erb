@@ -1,17 +1,7 @@
 <% content_for :title, "Runvster" %>
 
 <main class="rv-shell">
-  <header class="rv-topbar">
-    <a class="rv-brand" href="/">
-      <%= image_tag "runvster.png", alt: "Runvster", class: "rv-brand-mark" %>
-      <span class="rv-brand-copy">
-        <span class="rv-brand-name">Runvster</span>
-        <span class="rv-brand-tagline">A sharper community platform for builders.</span>
-      </span>
-    </a>
-
-    <span class="rv-chip">Docker-first alpha</span>
-  </header>
+  <%= render "shared/topbar" %>
 
   <section class="rv-hero">
     <article class="rv-panel">
@@ -21,6 +11,10 @@
         Runvster is being built from scratch as a community platform for builders who want sharp discussion,
         cleaner product ergonomics, and less historical baggage.
       </p>
+      <div class="rv-pill-row rv-pill-row--compact">
+        <span class="rv-chip">Docker-first alpha</span>
+        <span class="rv-chip">Rails monolith</span>
+      </div>
       <div class="rv-actions">
         <a class="rv-button rv-button--primary" href="/up">Health Check</a>
         <a class="rv-button rv-button--secondary" href="http://localhost:8025" target="_blank" rel="noreferrer">Mailpit</a>

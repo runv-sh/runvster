@@ -1,0 +1,10 @@
+Oi @<%= @user.username %>,
+
+Segue seu resumo <%= @frequency == "weekly" ? "semanal" : "diario" %> do Runvster.
+
+<% @notifications.each do |notification| %>
+- <%= notification.message %>
+<% end %>
+
+Inbox:
+<%= notifications_url %>

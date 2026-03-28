@@ -1,0 +1,77 @@
+<% content_for :title, "Conta | Runvster" %>
+
+<main class="rv-shell rv-shell--narrow">
+  <%= render "shared/topbar" %>
+
+  <section class="rv-stack">
+    <article class="rv-panel">
+      <p class="rv-section-eyebrow">Conta</p>
+      <h1 class="rv-section-title rv-section-title--page">Gerencie seu perfil e seu ruido.</h1>
+
+      <div class="rv-banner <%= current_user.email_verified? ? "rv-banner--success" : "rv-banner--warning" %>">
+        <div>
+          <strong><%= current_user.email_verified? ? "Email confirmado" : "Email pendente de confirmacao" %></strong>
+          <p class="rv-meta">
+            <% if current_user.email_verified? %>
+              Seu email <strong><%= current_user.email %></strong> ja pode receber notificacoes, resumos e fluxos de recuperacao.
+            <% else %>
+              O email <strong><%= current_user.email %></strong> ainda nao foi confirmado. Confirme para destravar recuperacao de senha e operacao por email.
+            <% end %>
+          </p>
+        </div>
+
+        <% unless current_user.email_verified? %>
+          <%= button_to "Reenviar confirmacao", email_confirmation_path, method: :post, class: "rv-button rv-button--secondary rv-button--tiny" %>
+        <% end %>
+      </div>
+
+      <%= render "shared/form_errors", record: @user %>
+
+      <%= form_with model: @user, url: account_path, class: "rv-form" do |form| %>
+        <div class="rv-field">
+          <%= form.label :username, "Username" %>
+          <%= form.text_field :username %>
+        </div>
+
+        <div class="rv-field">
+          <%= form.label :email, "Email" %>
+          <%= form.email_field :email %>
+        </div>
+
+        <div class="rv-field">
+          <%= form.label :bio, "Bio" %>
+          <%= form.text_area :bio, rows: 4 %>
+        </div>
+
+        <div class="rv-field">
+          <%= form.label :digest_frequency, "Resumo por email" %>
+          <%= form.select :digest_frequency, User.digest_frequencies.keys.map { |value| [ value == "off" ? "Desligado" : value.humanize, value ] }, {}, class: "rv-input" %>
+        </div>
+
+        <div class="rv-check-grid">
+          <label class="rv-check">
+            <%= form.check_box :notify_on_comments %>
+            <span>Notificar comentarios nos meus posts</span>
+          </label>
+          <label class="rv-check">
+            <%= form.check_box :notify_on_replies %>
+            <span>Notificar respostas aos meus comentarios</span>
+          </label>
+          <label class="rv-check">
+            <%= form.check_box :notify_on_invites %>
+            <span>Notificar aceite de convites</span>
+          </label>
+          <label class="rv-check">
+            <%= form.check_box :notify_on_moderation %>
+            <span>Notificar eventos de moderacao</span>
+          </label>
+        </div>
+
+        <div class="rv-actions">
+          <%= form.submit "Salvar conta", class: "rv-button rv-button--primary" %>
+          <%= link_to "Trocar senha", edit_account_password_path, class: "rv-button rv-button--secondary" %>
+        </div>
+      <% end %>
+    </article>
+  </section>
+</main>

@@ -1,11 +1,11 @@
-<% content_for :title, "Admin Posts | Runvster" %>
+<% content_for :title, "Posts | Runvster" %>
 
 <main class="rv-shell">
   <%= render "shared/topbar" %>
 
   <section class="rv-stack">
     <article class="rv-panel">
-      <p class="rv-section-eyebrow">Admin</p>
+      <p class="rv-section-eyebrow"><%= current_user.admin? ? "Admin" : "Moderacao" %></p>
       <h1 class="rv-section-title rv-section-title--page">Gestao de posts</h1>
 
       <div class="rv-admin-table">
@@ -13,7 +13,12 @@
           <div class="rv-admin-table__row rv-admin-table__row--stacked">
             <div>
               <strong><%= link_to post.title, post_path(post), class: "rv-inline-link" %></strong>
-              <p class="rv-meta">por @<%= post.user.username %> · score <%= post.score %> · <%= pluralize(post.comments_count, "comentario") %></p>
+              <p class="rv-meta">
+                por @<%= post.user.username %> · score <%= post.score %> · <%= pluralize(post.comments_count, "comentario") %> · <%= post.hidden? ? "oculto" : "visivel" %>
+              </p>
+              <% if post.hidden? %>
+                <p class="rv-meta">Ocultado por @<%= post.hidden_by&.username %> · <%= post.hidden_reason %></p>
+              <% end %>
             </div>
 
             <%= form_with model: [ :admin, post ], class: "rv-form" do |form| %>
@@ -33,14 +38,24 @@
                 <%= label_tag "post_#{post.id}_tag_names", "Tags" %>
                 <%= text_field_tag "post[tag_names]", post.tag_list, id: "post_#{post.id}_tag_names", class: "rv-input" %>
               </div>
+              <div class="rv-field">
+                <%= label_tag "post_#{post.id}_moderation_action", "Acao de moderacao" %>
+                <%= select_tag "post[moderation_action]", options_for_select([["Sem acao", ""], ["Ocultar post", "hide"], ["Restaurar post", "restore"]]), id: "post_#{post.id}_moderation_action", class: "rv-input" %>
+              </div>
+              <div class="rv-field">
+                <%= label_tag "post_#{post.id}_moderation_note", "Nota de moderacao" %>
+                <%= text_field_tag "post[moderation_note]", nil, id: "post_#{post.id}_moderation_note", class: "rv-input", placeholder: "Motivo da acao" %>
+              </div>
               <div class="rv-actions">
                 <%= form.submit "Salvar post", class: "rv-button rv-button--primary rv-button--tiny" %>
               </div>
             <% end %>
 
-            <div class="rv-actions">
-              <%= button_to "Excluir post", admin_post_path(post), method: :delete, class: "rv-button rv-button--ghost rv-button--tiny", form: { data: { turbo_confirm: "Excluir este post?" } } %>
-            </div>
+            <% if current_user.admin? %>
+              <div class="rv-actions">
+                <%= button_to "Excluir post", admin_post_path(post), method: :delete, class: "rv-button rv-button--ghost rv-button--tiny", form: { data: { turbo_confirm: "Excluir este post?" } } %>
+              </div>
+            <% end %>
           </div>
         <% end %>
       </div>

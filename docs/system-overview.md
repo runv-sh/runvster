@@ -11,6 +11,9 @@ The current implementation is intentionally small:
 - users can publish link posts or text posts
 - posts can be tagged
 - the homepage is a feed with basic filters
+- posts support comments and replies
+- posts support upvotes and downvotes
+- the product includes notifications, moderation reports and admin review flows
 
 ## What Exists Today
 
@@ -63,21 +66,20 @@ Authenticated users can:
 Current feed modes:
 
 - `Recentes`: newest posts first
-- `Top`: temporary ranking based on tag signal and recency
+- `Top`: ranking based on votes, comments and recency
 - `Links`: only posts with URL
 - `Discussao`: only text posts without URL
 
 Important note:
 
-The current `Top` feed is only a placeholder. Since the system still does not have votes or comments, this ranking is not yet a real community ranking algorithm.
+The current `Top` feed is already backed by real activity, but it is still intentionally simple. The score combines post votes, comment volume and freshness instead of a more mature long-term ranking model.
 
 ## Current Gaps
 
 The biggest missing parts are:
 
-- comments
-- votes
-- moderation
-- notifications
-- admin
 - production deployment setup
+- deeper moderation actions beyond report triage
+- richer notification preferences or digest flows
+- CI/CD, monitoring and backup automation
+- automated test coverage

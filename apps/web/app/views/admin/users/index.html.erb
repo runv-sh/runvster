@@ -1,46 +1,69 @@
-<% content_for :title, "Admin Users | Runvster" %>
+<% content_for :title, "Users | Runvster" %>
 
 <main class="rv-shell">
   <%= render "shared/topbar" %>
 
   <section class="rv-stack">
     <article class="rv-panel">
-      <p class="rv-section-eyebrow">Admin</p>
-      <h1 class="rv-section-title rv-section-title--page">Usuarios e papeis</h1>
+      <p class="rv-section-eyebrow"><%= current_user.admin? ? "Admin" : "Moderacao" %></p>
+      <h1 class="rv-section-title rv-section-title--page">Usuarios, papeis e estados</h1>
 
       <div class="rv-admin-table">
         <% @users.each do |user| %>
           <div class="rv-admin-table__row rv-admin-table__row--stacked">
             <div>
               <strong><%= link_to "@#{user.username}", user_path(user), class: "rv-inline-link" %></strong>
-              <p class="rv-meta"><%= user.email %> · entrou ha <%= time_ago_in_words(user.created_at) %> · papel atual: <%= user.role %></p>
+              <p class="rv-meta">
+                <%= user.email %> · entrou ha <%= time_ago_in_words(user.created_at) %> · papel <%= user.role %> · estado <%= user.account_state %> · <%= user.email_verified? ? "email confirmado" : "email pendente" %>
+              </p>
             </div>
 
-            <%= form_with model: [ :admin, user ], class: "rv-form" do |form| %>
-              <div class="rv-field">
-                <%= form.label :username, "Username" %>
-                <%= form.text_field :username %>
-              </div>
-              <div class="rv-field">
-                <%= form.label :email, "Email" %>
-                <%= form.email_field :email %>
-              </div>
-              <div class="rv-field">
-                <%= form.label :bio, "Bio" %>
-                <%= form.text_area :bio, rows: 3 %>
-              </div>
-              <div class="rv-field">
-                <%= form.label :role, "Papel" %>
-                <%= form.select :role, User.roles.keys.map { |role| [ role.humanize, role ] }, {}, class: "rv-input" %>
-              </div>
-              <div class="rv-actions">
-                <%= form.submit "Salvar usuario", class: "rv-button rv-button--primary rv-button--tiny" %>
-              </div>
+            <% if current_user.moderator? && user.admin? %>
+              <p class="rv-meta">Moderadores nao podem alterar contas administrativas.</p>
+            <% else %>
+              <%= form_with model: [ :admin, user ], class: "rv-form" do |form| %>
+                <% if current_user.admin? %>
+                  <div class="rv-field">
+                    <%= form.label :username, "Username" %>
+                    <%= form.text_field :username %>
+                  </div>
+                  <div class="rv-field">
+                    <%= form.label :email, "Email" %>
+                    <%= form.email_field :email %>
+                  </div>
+                  <div class="rv-field">
+                    <%= form.label :bio, "Bio" %>
+                    <%= form.text_area :bio, rows: 3 %>
+                  </div>
+                  <div class="rv-field">
+                    <%= form.label :role, "Papel" %>
+                    <%= form.select :role, User.roles.keys.map { |role| [ role.humanize, role ] }, {}, class: "rv-input" %>
+                  </div>
+                <% end %>
+
+                <div class="rv-field">
+                  <%= form.label :account_state, "Estado da conta" %>
+                  <%= form.select :account_state, User.account_states.keys.map { |state| [ state.humanize, state ] }, {}, class: "rv-input" %>
+                </div>
+                <div class="rv-field">
+                  <%= form.label :suspended_until, "Suspenso ate" %>
+                  <%= form.datetime_local_field :suspended_until %>
+                </div>
+                <div class="rv-field">
+                  <%= form.label :moderation_note, "Nota de moderacao" %>
+                  <%= form.text_area :moderation_note, rows: 3, placeholder: "Contexto interno para suspensao, banimento ou reativacao" %>
+                </div>
+                <div class="rv-actions">
+                  <%= form.submit "Salvar usuario", class: "rv-button rv-button--primary rv-button--tiny" %>
+                </div>
+              <% end %>
             <% end %>
 
-            <div class="rv-actions">
-              <%= button_to "Excluir usuario", admin_user_path(user), method: :delete, class: "rv-button rv-button--ghost rv-button--tiny", form: { data: { turbo_confirm: "Excluir este usuario e todo o conteudo dele?" } } %>
-            </div>
+            <% if current_user.admin? %>
+              <div class="rv-actions">
+                <%= button_to "Excluir usuario", admin_user_path(user), method: :delete, class: "rv-button rv-button--ghost rv-button--tiny", form: { data: { turbo_confirm: "Excluir este usuario e todo o conteudo dele?" } } %>
+              </div>
+            <% end %>
           </div>
         <% end %>
       </div>

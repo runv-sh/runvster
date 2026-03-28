@@ -5,8 +5,14 @@ class SessionsController < ApplicationController
 
   def create
     user = User.find_by(email: session_params[:email].to_s.strip.downcase)
+    user&.reactivate_if_needed!
 
     if user&.authenticate(session_params[:password])
+      if user.restriction_active?
+        flash.now[:alert] = user.restriction_message
+        return render :new, status: :unprocessable_entity
+      end
+
       start_session_for(user)
       redirect_to dashboard_path, notice: "Bem-vinde de volta."
     else

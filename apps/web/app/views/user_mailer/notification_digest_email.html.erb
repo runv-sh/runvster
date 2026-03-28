@@ -1,0 +1,14 @@
+<p>Oi <strong>@<%= @user.username %></strong>,</p>
+
+<p>Segue seu resumo <%= @frequency == "weekly" ? "semanal" : "diario" %> do Runvster.</p>
+
+<ul>
+  <% @notifications.each do |notification| %>
+    <li><%= notification.message %></li>
+  <% end %>
+</ul>
+
+<p>
+  Abra seu inbox:
+  <a href="<%= notifications_url %>"><%= notifications_url %></a>
+</p>

@@ -1,4 +1,4 @@
-<% content_for :title, "Admin Invitations | Runvster" %>
+<% content_for :title, "Invitations | Runvster" %>
 
 <main class="rv-shell">
   <%= render "shared/topbar" %>
@@ -6,7 +6,85 @@
   <section class="rv-stack">
     <article class="rv-panel">
       <p class="rv-section-eyebrow">Admin</p>
-      <h1 class="rv-section-title rv-section-title--page">Gestao de convites</h1>
+      <h1 class="rv-section-title rv-section-title--page">Gestao de convites e politicas</h1>
+
+      <%= form_with model: @community_setting, url: admin_community_settings_path, class: "rv-form" do |form| %>
+        <div class="rv-dashboard-grid">
+          <div class="rv-field">
+            <%= form.label :member_invite_limit, "Cota de convites por membro" %>
+            <%= form.number_field :member_invite_limit, min: 0 %>
+          </div>
+          <div class="rv-field">
+            <%= form.label :member_invite_unlock_days, "Dias para liberar convites" %>
+            <%= form.number_field :member_invite_unlock_days, min: 1 %>
+          </div>
+          <div class="rv-field">
+            <%= form.label :invite_expiration_days, "Dias para expirar convites" %>
+            <%= form.number_field :invite_expiration_days, min: 1 %>
+          </div>
+          <div class="rv-field">
+            <%= form.label :posts_per_hour, "Posts por hora" %>
+            <%= form.number_field :posts_per_hour, min: 1 %>
+          </div>
+          <div class="rv-field">
+            <%= form.label :comments_per_ten_minutes, "Comentarios por 10 minutos" %>
+            <%= form.number_field :comments_per_ten_minutes, min: 1 %>
+          </div>
+          <div class="rv-field">
+            <%= form.label :reports_per_hour, "Reportes por hora" %>
+            <%= form.number_field :reports_per_hour, min: 1 %>
+          </div>
+        </div>
+
+        <div class="rv-check-grid">
+          <label class="rv-check">
+            <%= form.check_box :require_email_verification_for_posting %>
+            <span>Exigir email confirmado para publicar e comentar</span>
+          </label>
+          <label class="rv-check">
+            <%= form.check_box :require_email_verification_for_invites %>
+            <span>Exigir email confirmado para enviar convites</span>
+          </label>
+        </div>
+
+        <div class="rv-actions">
+          <%= form.submit "Salvar politicas", class: "rv-button rv-button--primary" %>
+        </div>
+      <% end %>
+    </article>
+
+    <article class="rv-panel">
+      <p class="rv-section-eyebrow">Lote</p>
+      <h2 class="rv-card-title">Operacoes em lote</h2>
+
+      <%= form_with url: bulk_update_admin_invitations_path, method: :patch, class: "rv-form" do |form| %>
+        <div class="rv-field">
+          <%= label_tag :operation, "Operacao" %>
+          <%= select_tag :operation, options_for_select([["Reenviar", "resend"], ["Lembrar", "remind"], ["Estender validade", "extend"], ["Revogar", "revoke"]]), class: "rv-input" %>
+        </div>
+        <div class="rv-field">
+          <%= label_tag :bulk_note, "Nota para revogacao" %>
+          <%= text_field_tag :bulk_note, nil, class: "rv-input" %>
+        </div>
+
+        <div class="rv-admin-table">
+          <% @invitations.each do |invitation| %>
+            <label class="rv-check">
+              <%= check_box_tag "invitation_ids[]", invitation.id %>
+              <span><strong><%= invitation.recipient_email %></strong> · <%= invitation.accepted? ? "aceito" : invitation.active? ? "pendente" : invitation.revoked? ? "revogado" : "expirado" %></span>
+            </label>
+          <% end %>
+        </div>
+
+        <div class="rv-actions">
+          <%= form.submit "Aplicar no lote", class: "rv-button rv-button--primary" %>
+        </div>
+      <% end %>
+    </article>
+
+    <article class="rv-panel">
+      <p class="rv-section-eyebrow">Convites</p>
+      <h2 class="rv-card-title">Gestao individual</h2>
 
       <div class="rv-admin-table">
         <% @invitations.each do |invitation| %>
@@ -15,14 +93,27 @@
               <strong><%= invitation.recipient_email %></strong>
               <p class="rv-meta">
                 por @<%= invitation.inviter.username %> ·
-                <%= invitation.accepted? ? "aceito" : invitation.active? ? "pendente" : invitation.revoked? ? "revogado" : "expirado" %>
+                <%= invitation.accepted? ? "aceito" : invitation.active? ? "pendente" : invitation.revoked? ? "revogado" : "expirado" %> ·
+                envios <%= invitation.sent_count %>
               </p>
+              <% if invitation.active? %>
+                <input class="rv-input rv-input--compact" value="<%= invitation_signup_url(invitation) %>" readonly>
+              <% end %>
             </div>
 
             <% if invitation.active? %>
-              <%= form_with model: [ :admin, invitation ], class: "rv-inline-form" do |form| %>
-                <%= form.text_field :acceptance_note, placeholder: "Motivo para revogar", class: "rv-input" %>
-                <%= form.submit "Revogar convite", class: "rv-button rv-button--secondary rv-button--tiny" %>
+              <%= form_with model: [ :admin, invitation ], class: "rv-form" do |form| %>
+                <div class="rv-field">
+                  <%= label_tag "invitation_#{invitation.id}_operation", "Operacao" %>
+                  <%= select_tag "invitation[operation]", options_for_select([["Reenviar", "resend"], ["Lembrar", "remind"], ["Estender validade", "extend"], ["Revogar", "revoke"]]), id: "invitation_#{invitation.id}_operation", class: "rv-input" %>
+                </div>
+                <div class="rv-field">
+                  <%= form.label :acceptance_note, "Nota" %>
+                  <%= form.text_field :acceptance_note, placeholder: "Motivo ou contexto" %>
+                </div>
+                <div class="rv-actions">
+                  <%= form.submit "Aplicar", class: "rv-button rv-button--primary rv-button--tiny" %>
+                </div>
               <% end %>
             <% end %>
 

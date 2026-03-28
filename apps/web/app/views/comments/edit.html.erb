@@ -1,0 +1,26 @@
+<% content_for :title, "Editar Comentario | Runvster" %>
+
+<main class="rv-shell rv-shell--narrow">
+  <%= render "shared/topbar" %>
+
+  <section class="rv-auth">
+    <article class="rv-panel">
+      <p class="rv-section-eyebrow">Autoria</p>
+      <h1 class="rv-section-title rv-section-title--page">Edite seu comentario.</h1>
+
+      <%= render "shared/form_errors", record: @comment %>
+
+      <%= form_with model: [ @post, @comment ], class: "rv-form" do |form| %>
+        <div class="rv-field">
+          <%= form.label :body, "Comentario" %>
+          <%= form.text_area :body, rows: 6 %>
+        </div>
+
+        <div class="rv-actions">
+          <%= form.submit "Salvar comentario", class: "rv-button rv-button--primary" %>
+          <%= link_to "Voltar ao post", post_path(@post, anchor: "comment-#{@comment.id}"), class: "rv-button rv-button--secondary" %>
+        </div>
+      <% end %>
+    </article>
+  </section>
+</main>

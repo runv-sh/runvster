@@ -2,7 +2,10 @@
   <div class="rv-topbar__brand">
     <%= link_to root_path, class: "rv-brand" do %>
       <%= image_tag "runvster.png", alt: "Runvster", class: "rv-brand-mark" %>
-      <span class="rv-brand-name">Runvster</span>
+      <span class="rv-brand-copy">
+        <span class="rv-brand-name">Runvster</span>
+        <span class="rv-brand-tagline">links, contexto e discussao em alta densidade</span>
+      </span>
     <% end %>
   </div>
 
@@ -12,8 +15,10 @@
 
     <% if authenticated? %>
       <%= link_to current_user.admin? ? "Admin" : "Dashboard", dashboard_path, class: "rv-nav__link" %>
+      <%= link_to "Moderacao", admin_moderation_cases_path, class: "rv-nav__link" if staff_member? %>
       <%= link_to "Inbox#{current_user.unread_notifications_count.positive? ? " (#{current_user.unread_notifications_count})" : ""}", notifications_path, class: "rv-nav__link" %>
       <%= link_to "Publicar", new_post_path, class: "rv-nav__link rv-nav__link--accent" %>
+      <%= link_to "Conta", edit_account_path, class: "rv-nav__link" %>
       <%= link_to "@#{current_user.username}", user_path(current_user), class: "rv-nav__link" %>
       <%= button_to "Sair", sign_out_path, method: :delete, class: "rv-button rv-button--ghost rv-button--tiny" %>
     <% end %>
